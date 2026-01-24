@@ -3,6 +3,8 @@
 # dependencies
 /node_modules
 
+.zip
+
 # next.js
 /.next/
 /out/
