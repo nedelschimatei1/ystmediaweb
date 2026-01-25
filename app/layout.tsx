@@ -5,6 +5,8 @@ import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
 import { I18nProvider } from '@/lib/i18n'
 import { NewsletterWrapper } from '@/components/newsletter-wrapper'
+import { WhatsAppButton } from '@/components/whatsapp-button'
+import { HomePageSchemas } from '@/components/structured-data'
 import './globals.css'
 
 const playfair = Playfair_Display({ 
@@ -38,6 +40,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <HomePageSchemas />
+      </head>
       <body className={`${playfair.variable} ${inter.variable} font-sans antialiased`}>
         <ThemeProvider
           attribute="class"
@@ -48,6 +53,7 @@ export default function RootLayout({
           <I18nProvider>
             {children}
             <NewsletterWrapper />
+            <WhatsAppButton />
           </I18nProvider>
         </ThemeProvider>
         <Analytics />

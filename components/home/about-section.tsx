@@ -65,9 +65,9 @@ export function AboutSection() {
   ];
 
   return (
-    <section ref={sectionRef} className="py-16 lg:py-20 bg-background">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+    <section ref={sectionRef} className="w-full py-8 md:py-12 lg:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           {/* Left Content */}
           <div>
             <span 

@@ -31,4 +31,31 @@ export const contactTranslations = {
   "contact.info.phone": { ro: "Telefon", en: "Phone" },
   "contact.info.address": { ro: "Adresă", en: "Address" },
   "contact.info.hours": { ro: "Program", en: "Hours" },
+  
+  // Schedule consultation
+  "schedule.label": { ro: "Programează", en: "Schedule" },
+  "schedule.title": { ro: "Programează o Consultație", en: "Schedule a Consultation" },
+  "schedule.subtitle": { 
+    ro: "Alegeți o oră convenabilă pentru a discuta despre nevoile afacerii dumneavoastră cu unul dintre experții noștri.", 
+    en: "Choose a convenient time to discuss your business needs with one of our experts." 
+  },
+  "schedule.quick": { ro: "Apel Rapid · 15 min", en: "Quick Call · 15 min" },
+  "schedule.quickDesc": { 
+    ro: "Perfect pentru întrebări rapide sau pentru a vedea dacă suntem potriviți pentru proiectul dumneavoastră.", 
+    en: "Perfect for quick questions or to see if we're the right fit for your project." 
+  },
+  "schedule.full": { ro: "Consultație Completă · 30 min", en: "Full Consultation · 30 min" },
+  "schedule.fullDesc": { 
+    ro: "Discuție aprofundată despre obiectivele, provocările și modul în care vă putem ajuta afacerea.", 
+    en: "In-depth discussion about your goals, challenges, and how we can help your business." 
+  },
+  "schedule.book": { ro: "Programează acum", en: "Book now" },
+  "schedule.or": { ro: "Sau trimite-ne un mesaj", en: "Or send us a message" },
+
+  // WhatsApp support button
+  "whatsapp.tooltip": { ro: "Asistență", en: "Get support" },
+  "whatsapp.message": { 
+    ro: "Bună! Aș dori să aflu mai multe despre serviciile YST Media.", 
+    en: "Hello! I'd like to learn more about YST Media services." 
+  },
 };

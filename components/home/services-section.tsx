@@ -55,8 +55,8 @@ export function ServicesSection() {
   ];
 
   return (
-    <section ref={sectionRef} className="py-16 lg:py-20 bg-muted">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+    <section ref={sectionRef} className="w-full py-8 md:py-12 lg:py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="max-w-2xl">
           <span 

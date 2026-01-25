@@ -10,7 +10,7 @@ export function CTASection() {
   const { ref: sectionRef, isInView } = useInView({ threshold: 0.2 });
 
   return (
-    <section ref={sectionRef} className="py-16 lg:py-20 bg-primary dark:bg-gradient-to-b dark:from-background dark:via-accent/5 dark:to-background text-primary-foreground dark:text-foreground overflow-hidden relative">
+    <section ref={sectionRef} className="w-full h-full flex items-center justify-center bg-primary dark:bg-gradient-to-b dark:from-background dark:via-accent/5 dark:to-background text-primary-foreground dark:text-foreground overflow-hidden relative">
       {/* Elegant decorative elements for dark mode */}
       <div className="hidden dark:block absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[1px] bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
@@ -19,7 +19,7 @@ export function CTASection() {
         <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-64 h-64 bg-accent/5 rounded-full blur-3xl" />
       </div>
         
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-8 md:py-12 lg:py-16">
         <div className="max-w-3xl mx-auto text-center">
           {/* Badge */}
           <div 
