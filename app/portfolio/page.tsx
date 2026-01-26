@@ -1,10 +1,13 @@
+import dynamic from "next/dynamic";
 import { Navigation } from "@/components/navigation";
-import { Footer } from "@/components/footer";
 import { PortfolioHero } from "@/components/portfolio/portfolio-hero";
-import { ProjectsGrid } from "@/components/portfolio/projects-grid";
-import { ServicesShowcase } from "@/components/portfolio/services-showcase";
-import { Testimonials } from "@/components/portfolio/testimonials";
 import { BreadcrumbSchema } from "@/components/structured-data";
+
+// Lazy load below-the-fold components
+const ProjectsGrid = dynamic(() => import("@/components/portfolio/projects-grid").then(mod => ({ default: mod.ProjectsGrid })));
+const ServicesShowcase = dynamic(() => import("@/components/portfolio/services-showcase").then(mod => ({ default: mod.ServicesShowcase })));
+const Testimonials = dynamic(() => import("@/components/portfolio/testimonials").then(mod => ({ default: mod.Testimonials })));
+const Footer = dynamic(() => import("@/components/footer").then(mod => ({ default: mod.Footer })));
 
 const breadcrumbData = [
   { name: "Home", url: "https://ystmedia.com" },

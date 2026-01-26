@@ -61,6 +61,19 @@
     "vaul": "^1.1.2",
     "zod": "3.25.76"
   },
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Firefox versions",
+    "last 2 Safari versions",
+    "last 2 Edge versions",
+    "last 2 iOS versions",
+    "last 2 ChromeAndroid versions",
+    "last 2 Samsung versions",
+    ">0.5%",
+    "not dead",
+    "not IE 11",
+    "not op_mini all"
+  ],
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.9",
     "@types/node": "^22",

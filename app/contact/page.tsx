@@ -1,13 +1,16 @@
+import dynamic from "next/dynamic";
 import { Navigation } from "@/components/navigation";
-import { Footer } from "@/components/footer";
 import { ContactHero } from "@/components/contact/contact-hero";
-import { ScheduleConsultation } from "@/components/contact/schedule-consultation";
-import { ContactForm } from "@/components/contact/contact-form";
-import { ContactInfo } from "@/components/contact/contact-info";
-import { ContactMap } from "@/components/contact/contact-map";
-import { FAQ } from "@/components/contact/faq";
-import { ContactDivider } from "@/components/contact/contact-divider";
 import { FAQSchema, BreadcrumbSchema } from "@/components/structured-data";
+
+// Lazy load below-the-fold components
+const ScheduleConsultation = dynamic(() => import("@/components/contact/schedule-consultation").then(mod => ({ default: mod.ScheduleConsultation })));
+const ContactForm = dynamic(() => import("@/components/contact/contact-form").then(mod => ({ default: mod.ContactForm })));
+const ContactInfo = dynamic(() => import("@/components/contact/contact-info").then(mod => ({ default: mod.ContactInfo })));
+const ContactMap = dynamic(() => import("@/components/contact/contact-map").then(mod => ({ default: mod.ContactMap })));
+const FAQ = dynamic(() => import("@/components/contact/faq").then(mod => ({ default: mod.FAQ })));
+const ContactDivider = dynamic(() => import("@/components/contact/contact-divider").then(mod => ({ default: mod.ContactDivider })));
+const Footer = dynamic(() => import("@/components/footer").then(mod => ({ default: mod.Footer })));
 
 // FAQ data for schema (English versions for SEO)
 const faqSchemaData = [
