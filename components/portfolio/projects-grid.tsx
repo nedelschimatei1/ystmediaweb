@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 
 export function ProjectsGrid() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const [activeCategory, setActiveCategory] = useState("all");
 
   const categories = [
@@ -23,10 +23,8 @@ export function ProjectsGrid() {
       title: "Grand Palace Hotel",
       category: "hotel-management",
       categoryLabel: t("portfolio.filter.hotelManagement"),
-      description: locale === "ro" 
-        ? "Revizuire completă a sistemului de management al veniturilor cu creștere de 35% RevPAR."
-        : "Complete revenue management system overhaul with 35% RevPAR increase.",
-      location: locale === "ro" ? "București, România" : "Bucharest, Romania",
+      description: t("portfolio.project1.desc"),
+      location: t("portfolio.project1.location"),
       year: "2024",
       featured: true,
     },
@@ -35,10 +33,8 @@ export function ProjectsGrid() {
       title: "Mountain Resort",
       category: "digital-marketing",
       categoryLabel: t("portfolio.filter.digitalMarketing"),
-      description: locale === "ro"
-        ? "Transformare digitală completă incluzând redesign website și optimizare SEO."
-        : "Complete digital transformation including website redesign and SEO optimization.",
-      location: locale === "ro" ? "Brașov, România" : "Brasov, Romania",
+      description: t("portfolio.project2.desc"),
+      location: t("portfolio.project2.location"),
       year: "2023",
       featured: false,
     },
@@ -47,10 +43,8 @@ export function ProjectsGrid() {
       title: "Seaside Luxury Resort",
       category: "certifications",
       categoryLabel: t("portfolio.filter.certifications"),
-      description: locale === "ro"
-        ? "Obținerea cu succes a certificatului de clasificare 5 stele pentru resort de lux."
-        : "Successful acquisition of 5-star classification certificate for luxury resort.",
-      location: locale === "ro" ? "Constanța, România" : "Constanta, Romania",
+      description: t("portfolio.project3.desc"),
+      location: t("portfolio.project3.location"),
       year: "2024",
       featured: true,
     },
@@ -59,10 +53,8 @@ export function ProjectsGrid() {
       title: "Boutique Hotel Chain",
       category: "consulting",
       categoryLabel: t("portfolio.filter.consulting"),
-      description: locale === "ro"
-        ? "Consultanță strategică de expansiune pentru grup hotelier în piețe noi."
-        : "Strategic expansion consulting for hotel group in new markets.",
-      location: locale === "ro" ? "Locații Multiple" : "Multiple Locations",
+      description: t("portfolio.project4.desc"),
+      location: t("portfolio.project4.location"),
       year: "2023",
       featured: false,
     },
@@ -71,10 +63,8 @@ export function ProjectsGrid() {
       title: "Wellness Spa Resort",
       category: "hotel-management",
       categoryLabel: t("portfolio.filter.hotelManagement"),
-      description: locale === "ro"
-        ? "Restructurare operațională și implementare program training personal."
-        : "Operational restructuring and staff training program implementation.",
-      location: "Cluj-Napoca, România",
+      description: t("portfolio.project5.desc"),
+      location: t("portfolio.project5.location"),
       year: "2024",
       featured: false,
     },
@@ -83,10 +73,8 @@ export function ProjectsGrid() {
       title: "Historic Castle Hotel",
       category: "digital-marketing",
       categoryLabel: t("portfolio.filter.digitalMarketing"),
-      description: locale === "ro"
-        ? "Campanie marketing turism cultural cu creștere 200% în rezervări."
-        : "Cultural tourism marketing campaign with 200% booking increase.",
-      location: "Sibiu, România",
+      description: t("portfolio.project6.desc"),
+      location: t("portfolio.project6.location"),
       year: "2023",
       featured: true,
     },
@@ -109,7 +97,7 @@ export function ProjectsGrid() {
               className={cn(
                 "px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300",
                 activeCategory === cat.key
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-primary text-primary-foreground dark:bg-accent dark:text-accent-foreground"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
               )}
             >
@@ -139,7 +127,7 @@ export function ProjectsGrid() {
                 
                 {/* Featured badge */}
                 {project.featured && (
-                  <div className="absolute top-4 left-4 px-3 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-full">
+                  <div className="absolute top-4 left-4 px-3 py-1 bg-primary text-primary-foreground dark:bg-accent dark:text-accent-foreground text-xs font-medium rounded-full">
                     {t("portfolio.featured")}
                   </div>
                 )}

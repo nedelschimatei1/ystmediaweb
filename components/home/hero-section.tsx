@@ -29,7 +29,7 @@ export function HeroSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full h-full flex items-center justify-center overflow-hidden"
+      className="relative w-full min-h-screen md:h-full flex items-center justify-center overflow-hidden pt-16 pb-6 sm:pt-20 sm:pb-0"
       style={{ perspective: "1000px" }}
     >
       {/* Background gradient with parallax */}
@@ -39,8 +39,8 @@ export function HeroSection() {
 
       {/* Decorative elements with parallax */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/3 rounded-full blur-3xl" />
+        <div className="absolute top-10 sm:top-20 left-4 sm:left-10 w-32 sm:w-72 h-32 sm:h-72 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 sm:bottom-20 right-4 sm:right-10 w-40 sm:w-96 h-40 sm:h-96 bg-primary/3 rounded-full blur-3xl" />
       </div>
 
       {/* Content */}
@@ -48,17 +48,17 @@ export function HeroSection() {
         <div className="max-w-4xl mx-auto">
           {/* Badge */}
           <RevealWrapper delay={0} duration={1000}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary dark:text-accent text-sm font-medium mb-6">
-              <span className="w-2 h-2 rounded-full bg-primary dark:bg-accent animate-pulse" />
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary dark:text-accent text-xs font-medium mb-3 sm:mb-6">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary dark:bg-accent animate-pulse" />
               {t("hero.badge")}
             </div>
           </RevealWrapper>
 
           {/* Main headline */}
           <RevealWrapper delay={100} duration={1000}>
-            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tight text-foreground leading-[1.1] text-balance">
+            <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium tracking-tight text-foreground leading-[1.15] text-balance">
               <span className="block">{t("hero.title1")}</span>
-              <span className="block mt-2">
+              <span className="block mt-1 sm:mt-2">
                 {t("hero.title2")}{" "}
                 <span
                   className={`text-primary dark:text-accent inline-block transition-all duration-500 ${
@@ -73,17 +73,17 @@ export function HeroSection() {
 
           {/* Subtitle */}
           <RevealWrapper delay={200} duration={1000}>
-            <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="mt-3 sm:mt-6 text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               {t("hero.subtitle")}
             </p>
           </RevealWrapper>
 
           {/* CTA Buttons */}
           <RevealWrapper delay={300} duration={1000}>
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="mt-5 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-4">
               <Link
                 href="/contact#form"
-                className="group relative inline-flex items-center justify-center gap-2 px-7 py-3.5 text-base font-medium text-primary-foreground bg-primary rounded-full overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/25 active:scale-100"
+                className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-2.5 sm:py-3.5 text-sm font-medium text-primary-foreground bg-primary dark:bg-accent dark:text-accent-foreground rounded-full overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/25 active:scale-100"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   {t("hero.cta")}
@@ -92,7 +92,7 @@ export function HeroSection() {
               </Link>
               <Link
                 href="/portfolio"
-                className="group relative inline-flex items-center justify-center px-7 py-3.5 text-base font-medium text-primary rounded-full overflow-hidden transition-all duration-300 hover:scale-105 active:scale-100"
+                className="group relative w-full sm:w-auto inline-flex items-center justify-center px-5 sm:px-7 py-2.5 sm:py-3.5 text-sm font-medium text-primary rounded-full overflow-hidden transition-all duration-300 hover:scale-105 active:scale-100"
               >
                 <span className="absolute inset-0 bg-primary/10 transition-colors duration-300 group-hover:bg-primary/15" />
                 <span className="relative z-10">{t("hero.about")}</span>

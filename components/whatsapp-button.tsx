@@ -17,7 +17,7 @@ export function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        "fixed bottom-8 right-8 z-40",
+        "fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-40",
         "flex items-center gap-3",
         "transition-all duration-300"
       )}
@@ -25,12 +25,12 @@ export function WhatsAppButton() {
       onMouseLeave={() => setIsHovered(false)}
       aria-label={t("whatsapp.tooltip")}
     >
-      {/* Tooltip label */}
+      {/* Tooltip label - hidden on mobile */}
       <span
         className={cn(
-          "px-4 py-2 rounded-full",
-          "bg-primary text-primary-foreground text-sm font-medium",
-          "shadow-lg shadow-primary/20",
+          "hidden sm:block px-4 py-2 rounded-full",
+          "bg-primary text-primary-foreground dark:bg-accent dark:text-accent-foreground text-sm font-medium",
+          "shadow-lg shadow-primary/20 dark:shadow-accent/20",
           "transition-all duration-300",
           "whitespace-nowrap",
           isHovered
@@ -44,12 +44,12 @@ export function WhatsAppButton() {
       {/* WhatsApp button */}
       <div
         className={cn(
-          "w-14 h-14 rounded-full",
-          "bg-primary text-primary-foreground",
+          "w-12 h-12 sm:w-14 sm:h-14 rounded-full",
+          "bg-primary text-primary-foreground dark:bg-accent dark:text-accent-foreground",
           "flex items-center justify-center",
-          "shadow-lg shadow-primary/30",
+          "shadow-lg shadow-primary/30 dark:shadow-accent/30",
           "transition-all duration-300",
-          isHovered && "scale-110 shadow-xl shadow-primary/40"
+          isHovered && "scale-110 shadow-xl shadow-primary/40 dark:shadow-accent/40"
         )}
       >
         {/* WhatsApp Icon */}

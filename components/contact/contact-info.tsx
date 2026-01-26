@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 
 export function ContactInfo() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const [isInView, setIsInView] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -25,20 +25,20 @@ export function ContactInfo() {
     },
     {
       icon: Phone,
-      label: locale === "ro" ? "Alternativ" : "Alternative",
+      label: t("contact.info.alternative"),
       value: "+40 730 738 020",
       href: "tel:+40730738020",
     },
     {
       icon: MapPin,
       label: t("contact.info.address"),
-      value: "București, România",
-      href: null,
+      value: t("contact.map.fullAddress"),
+      href: "https://maps.google.com/?q=Drumul+Lunca+Sătească+23,+Bucharest,+Romania",
     },
     {
       icon: Clock,
       label: t("contact.info.hours"),
-      value: locale === "ro" ? "Luni - Vineri: 9:00 - 19:00" : "Mon - Fri: 9:00 AM - 7:00 PM",
+      value: t("contact.info.hoursValue"),
       href: null,
     },
   ];

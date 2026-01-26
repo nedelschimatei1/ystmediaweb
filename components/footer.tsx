@@ -33,9 +33,9 @@ export function Footer() {
   return (
     <footer className="bg-foreground text-background">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-0">
           {/* Brand */}
-          <div className="lg:col-span-1 -mt-8">
+          <div className="sm:col-span-2 lg:col-span-1 -mt-8 flex justify-center sm:justify-start">
             <Link href="/" className="inline-block">
               {mounted ? (
                 <Image
@@ -44,22 +44,22 @@ export function Footer() {
                   width={640}
                   height={427}
                   loading="lazy"
-                  sizes="(max-width: 768px) 280px, (max-width: 1024px) 320px, 400px"
-                  className="h-36 md:h-44 lg:h-52"
+                  sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 360px, 400px"
+                  className="h-36 sm:h-40 md:h-44 lg:h-52"
                   style={{ aspectRatio: '640/427', width: 'auto' }}
                 />
               ) : (
-                <div className="h-36 md:h-44 lg:h-52" style={{ aspectRatio: '640/427', width: 'auto' }} />
+                <div className="h-36 sm:h-40 md:h-44 lg:h-52" style={{ aspectRatio: '640/427', width: 'auto' }} />
               )}
             </Link>
           </div>
 
           {/* Navigation */}
-          <div>
-            <h3 className="font-medium text-sm uppercase tracking-wider mb-4 text-background">
-              {locale === "ro" ? "Navigare" : "Navigation"}
+          <div className="text-center sm:text-left lg:pl-22">
+            <h3 className="font-medium text-xs sm:text-sm uppercase tracking-wider mb-3 sm:mb-4 text-background">
+              {t("footer.navigation")}
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2 sm:space-y-3">
               {footerLinks.navigation.map((link) => (
                 <li key={link.href + link.label}>
                   <Link
@@ -74,11 +74,11 @@ export function Footer() {
           </div>
 
           {/* Services */}
-          <div>
-            <h3 className="font-medium text-sm uppercase tracking-wider mb-4 text-background">
+          <div className="text-center sm:text-left lg:pl-6">
+            <h3 className="font-medium text-xs sm:text-sm uppercase tracking-wider mb-3 sm:mb-4 text-background">
               {t("footer.services")}
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2 sm:space-y-3">
               {footerLinks.services.map((link) => (
                 <li key={link.label}>
                   <Link
@@ -93,15 +93,15 @@ export function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
-            <h3 className="font-medium text-sm uppercase tracking-wider mb-4 text-background">
+          <div className="text-center sm:text-left">
+            <h3 className="font-medium text-xs sm:text-sm uppercase tracking-wider mb-3 sm:mb-4 text-background">
               {t("nav.contact")}
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2 sm:space-y-3">
               <li>
                 <a
                   href="mailto:contact@ystmedia.com"
-                  className="flex items-center gap-2 text-background/70 hover:text-background transition-colors text-sm"
+                  className="inline-flex items-center gap-2 text-background/70 hover:text-background transition-colors text-sm justify-center sm:justify-start"
                 >
                   <Mail className="w-4 h-4" />
                   contact@ystmedia.com
@@ -110,16 +110,16 @@ export function Footer() {
               <li>
                 <a
                   href="tel:+40721469039"
-                  className="flex items-center gap-2 text-background/70 hover:text-background transition-colors text-sm"
+                  className="inline-flex items-center gap-2 text-background/70 hover:text-background transition-colors text-sm justify-center sm:justify-start"
                 >
                   <Phone className="w-4 h-4" />
                   +40 721 469 039
                 </a>
               </li>
               <li>
-                <span className="flex items-center gap-2 text-background/70 text-sm">
-                  <MapPin className="w-4 h-4" />
-                  București, România
+                <span className="inline-flex items-center gap-2 text-background/70 text-sm justify-center sm:justify-start">
+                  <MapPin className="w-4 h-4 flex-shrink-0" />
+                  {t("contact.map.address")}
                 </span>
               </li>
             </ul>
@@ -127,8 +127,8 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="mt-10 pt-6 border-t border-background/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-background/70 text-xs">
+        <div className="mt-10 pt-6 border-t border-background/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-background/70 text-xs text-center sm:text-left">
             {new Date().getFullYear()} YST Media. {t("footer.rights")}
           </p>
           <div className="flex items-center gap-4">
@@ -136,13 +136,13 @@ export function Footer() {
               href="/contact"
               className="text-background/70 hover:text-background transition-colors text-xs underline"
             >
-              {locale === "ro" ? "Politica de Confidențialitate" : "Privacy Policy"}
+              {t("footer.privacy")}
             </Link>
             <Link
               href="/contact"
               className="text-background/70 hover:text-background transition-colors text-xs underline"
             >
-              {locale === "ro" ? "Termeni și Condiții" : "Terms & Conditions"}
+              {t("footer.terms")}
             </Link>
           </div>
         </div>

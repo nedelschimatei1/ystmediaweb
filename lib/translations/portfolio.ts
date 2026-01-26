@@ -60,4 +60,57 @@ export const portfolioTranslations = {
   "portfolio.testimonials.label": { ro: "Testimoniale", en: "Testimonials" },
   "portfolio.testimonials.title": { ro: "Ce Spun Clienții Noștri", en: "What Our Clients Say" },
   "portfolio.testimonials.cta": { ro: "Începeți Proiectul", en: "Start Your Project" },
+
+  // Testimonial 1
+  "portfolio.testimonial1.quote": {
+    ro: "YST Media a transformat complet operațiunile hotelului nostru. Expertiza lor în managementul veniturilor singură a crescut profitabilitatea cu 40% în primul an.",
+    en: "YST Media completely transformed our hotel operations. Their revenue management expertise alone increased profitability by 40% in the first year."
+  },
+  "portfolio.testimonial1.role": { ro: "Manager General", en: "General Manager" },
+
+  // Testimonial 2
+  "portfolio.testimonial2.quote": {
+    ro: "Procesul de certificare părea copleșitor până am colaborat cu YST Media. Ne-au ghidat prin fiecare pas și am obținut clasificarea de 5 stele.",
+    en: "The certification process seemed overwhelming until we worked with YST Media. They guided us through every step and we achieved 5-star classification."
+  },
+  "portfolio.testimonial2.role": { ro: "Proprietar", en: "Owner" },
+
+  // Testimonial 3
+  "portfolio.testimonial3.quote": {
+    ro: "Strategiile lor de marketing digital ne-au schimbat complet prezența online. Am văzut o creștere de 200% în rezervările directe în șase luni.",
+    en: "Their digital marketing strategies completely changed our online presence. We saw a 200% increase in direct bookings within six months."
+  },
+  "portfolio.testimonial3.role": { ro: "Director Marketing", en: "Marketing Director" },
+
+  // Project descriptions
+  "portfolio.project1.desc": {
+    ro: "Revizuire completă a sistemului de management al veniturilor cu creștere de 35% RevPAR.",
+    en: "Complete revenue management system overhaul with 35% RevPAR increase."
+  },
+  "portfolio.project1.location": { ro: "București, România", en: "Bucharest, Romania" },
+  "portfolio.project2.desc": {
+    ro: "Transformare digitală completă incluzând redesign website și optimizare SEO.",
+    en: "Complete digital transformation including website redesign and SEO optimization."
+  },
+  "portfolio.project2.location": { ro: "Brașov, România", en: "Brasov, Romania" },
+  "portfolio.project3.desc": {
+    ro: "Obținerea cu succes a certificatului de clasificare 5 stele pentru resort de lux.",
+    en: "Successful acquisition of 5-star classification certificate for luxury resort."
+  },
+  "portfolio.project3.location": { ro: "Constanța, România", en: "Constanta, Romania" },
+  "portfolio.project4.desc": {
+    ro: "Consultanță strategică de expansiune pentru grup hotelier în piețe noi.",
+    en: "Strategic expansion consulting for hotel group in new markets."
+  },
+  "portfolio.project4.location": { ro: "Locații Multiple", en: "Multiple Locations" },
+  "portfolio.project5.desc": {
+    ro: "Restructurare operațională și implementare program training personal.",
+    en: "Operational restructuring and staff training program implementation."
+  },
+  "portfolio.project5.location": { ro: "Cluj-Napoca, România", en: "Cluj-Napoca, Romania" },
+  "portfolio.project6.desc": {
+    ro: "Campanie marketing turism cultural cu creștere 200% în rezervări.",
+    en: "Cultural tourism marketing campaign with 200% booking increase."
+  },
+  "portfolio.project6.location": { ro: "Sibiu, România", en: "Sibiu, Romania" },
 };

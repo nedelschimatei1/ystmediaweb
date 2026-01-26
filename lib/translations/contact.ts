@@ -29,8 +29,17 @@ export const contactTranslations = {
   },
   "contact.info.email": { ro: "Email", en: "Email" },
   "contact.info.phone": { ro: "Telefon", en: "Phone" },
+  "contact.info.alternative": { ro: "Alternativ", en: "Alternative" },
   "contact.info.address": { ro: "Adresă", en: "Address" },
   "contact.info.hours": { ro: "Program", en: "Hours" },
+  "contact.info.hoursValue": { ro: "Luni - Vineri: 9:00 - 19:00", en: "Mon - Fri: 9:00 AM - 7:00 PM" },
+
+  // Contact map section
+  "contact.map.label": { ro: "Locație", en: "Location" },
+  "contact.map.title": { ro: "Unde Ne Găsiți", en: "Where to Find Us" },
+  "contact.map.address": { ro: "București, România", en: "Bucharest, Romania" },
+  "contact.map.fullAddress": { ro: "Drumul Lunca Sătească 23, București", en: "Drumul Lunca Sătească 23, Bucharest" },
+  "contact.map.openMaps": { ro: "Deschide în Google Maps", en: "Open in Google Maps" },
   
   // Schedule consultation
   "schedule.label": { ro: "Programează", en: "Schedule" },
@@ -44,7 +53,7 @@ export const contactTranslations = {
     ro: "Perfect pentru întrebări rapide sau pentru a vedea dacă suntem potriviți pentru proiectul dumneavoastră.", 
     en: "Perfect for quick questions or to see if we're the right fit for your project." 
   },
-  "schedule.full": { ro: "Consultație Completă · 30 min", en: "Full Consultation · 30 min" },
+  "schedule.full": { ro: "Consultație Completă · 60 min", en: "Full Consultation · 60 min" },
   "schedule.fullDesc": { 
     ro: "Discuție aprofundată despre obiectivele, provocările și modul în care vă putem ajuta afacerea.", 
     en: "In-depth discussion about your goals, challenges, and how we can help your business." 

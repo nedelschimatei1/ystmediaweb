@@ -202,7 +202,7 @@ export function ContactForm() {
           disabled={isSubmitting}
           className={cn(
             "group w-full relative inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium",
-            "bg-primary text-primary-foreground rounded-full overflow-hidden",
+            "bg-primary text-primary-foreground dark:bg-accent dark:text-accent-foreground rounded-full overflow-hidden",
             "transition-all duration-300",
             "hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/20",
             "active:scale-100",

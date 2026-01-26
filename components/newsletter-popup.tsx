@@ -138,8 +138,8 @@ export function NewsletterPopup() {
                     disabled={isSubmitting}
                     className={cn(
                       "w-full inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium",
-                      "bg-primary text-primary-foreground rounded-lg",
-                      "hover:bg-primary/90 transition-all duration-300",
+                      "bg-primary text-primary-foreground dark:bg-accent dark:text-accent-foreground rounded-lg",
+                      "hover:bg-primary/90 dark:hover:bg-accent/90 transition-all duration-300",
                       "disabled:opacity-70 disabled:cursor-not-allowed"
                     )}
                   >

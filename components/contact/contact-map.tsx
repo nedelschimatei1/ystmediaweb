@@ -1,30 +1,35 @@
+"use client";
+
 import { MapPin } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 export function ContactMap() {
+  const { t } = useI18n();
+
   return (
     <section className="py-12 lg:py-16 bg-muted">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8">
           <span className="text-sm font-medium uppercase tracking-widest text-primary">
-            Locație
+            {t("contact.map.label")}
           </span>
           <h2 className="mt-3 font-serif text-3xl sm:text-4xl font-medium tracking-tight text-foreground">
-            Unde Ne Găsiți
+            {t("contact.map.title")}
           </h2>
         </div>
 
         {/* Map Container */}
         <div className="relative rounded-xl overflow-hidden border border-border shadow-sm">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d91158.10979956948!2d26.02609865!3d44.43799565!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40b1f93abf3cce51%3A0xac0632e37c9ca628!2sBucharest%2C%20Romania!5e0!3m2!1sen!2sus!4v1706100000000!5m2!1sen!2sus"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2849.5!2d26.1547!3d44.4083!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40b1ff5b6b5b5b5b%3A0x0!2sDrumul%20Lunca%20S%C4%83teasc%C4%83%2023%2C%20Bucharest%2C%20Romania!5e0!3m2!1sen!2sus!4v1706100000000!5m2!1sen!2sus"
             width="100%"
             height="400"
             style={{ border: 0 }}
             allowFullScreen
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            title="YST Media Location - București, România"
+            title="YST Media Location - Drumul Lunca Sătească 23, București, România"
             className="w-full"
           />
           
@@ -37,15 +42,16 @@ export function ContactMap() {
               <div>
                 <h3 className="font-serif font-medium text-foreground">YST Media</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  București, România
+                  Drumul Lunca Sătească 23<br />
+                  {t("contact.map.address")}
                 </p>
                 <a
-                  href="https://maps.google.com/?q=Bucharest,Romania"
+                  href="https://maps.google.com/?q=Drumul+Lunca+Sătească+23,+Bucharest,+Romania"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block mt-2 text-xs text-primary font-medium hover:underline"
                 >
-                  Deschide în Google Maps
+                  {t("contact.map.openMaps")}
                 </a>
               </div>
             </div>

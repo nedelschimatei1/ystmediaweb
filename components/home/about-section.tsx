@@ -40,7 +40,7 @@ function AnimatedCounter({ end, suffix = "" }: { end: number; suffix?: string })
   }, [hasStarted, end]);
 
   return (
-    <span ref={ref} className="block font-serif text-3xl lg:text-4xl font-semibold text-primary tabular-nums">
+    <span ref={ref} className="block font-serif text-2xl sm:text-3xl lg:text-4xl font-semibold text-primary tabular-nums">
       {count}{suffix}
     </span>
   );
@@ -65,34 +65,34 @@ export function AboutSection() {
   ];
 
   return (
-    <section ref={sectionRef} className="w-full py-8 md:py-12 lg:py-16">
+    <section ref={sectionRef} className="w-full py-8 sm:py-12 md:py-16 lg:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-16 items-center">
           {/* Left Content */}
-          <div>
+          <div className="text-center lg:text-left">
             <span 
-              className={`text-sm font-medium uppercase tracking-widest text-primary transition-all duration-700 ${
+              className={`text-xs font-medium uppercase tracking-widest text-primary transition-all duration-700 ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
               {t("about.label")}
             </span>
             <h2 
-              className={`mt-3 font-serif text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight text-foreground leading-[1.1] transition-all duration-700 delay-100 ${
+              className={`mt-1.5 sm:mt-3 font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight text-foreground leading-[1.1] transition-all duration-700 delay-100 ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
               {t("about.title")}
             </h2>
             <p 
-              className={`mt-4 text-base text-muted-foreground leading-relaxed transition-all duration-700 delay-200 ${
+              className={`mt-2 sm:mt-4 text-sm text-muted-foreground leading-relaxed transition-all duration-700 delay-200 ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
               {t("about.desc1")}
             </p>
             <p 
-              className={`mt-3 text-base text-muted-foreground leading-relaxed transition-all duration-700 delay-300 ${
+              className={`mt-1.5 sm:mt-3 text-sm text-muted-foreground leading-relaxed transition-all duration-700 delay-300 hidden sm:block ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
@@ -101,31 +101,31 @@ export function AboutSection() {
 
             {/* Pillars */}
             <div 
-              className={`mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 transition-all duration-700 delay-400 ${
+              className={`mt-3 sm:mt-6 grid grid-cols-2 gap-1.5 sm:gap-3 transition-all duration-700 delay-400 ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
               {pillars.map((pillar, index) => (
                 <div 
                   key={pillar} 
-                  className="flex items-center gap-3"
+                  className="flex items-center gap-1.5 sm:gap-3 justify-center lg:justify-start"
                   style={{ transitionDelay: `${400 + index * 50}ms` }}
                 >
-                  <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-foreground font-medium">{pillar}</span>
+                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
+                  <span className="text-xs sm:text-base text-foreground font-medium">{pillar}</span>
                 </div>
               ))}
             </div>
 
             {/* CTA */}
             <div 
-              className={`mt-6 transition-all duration-700 delay-500 ${
+              className={`mt-3 sm:mt-6 transition-all duration-700 delay-500 ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
               <Link
                 href="/portfolio"
-                className="group inline-flex items-center gap-2 text-primary font-medium hover:gap-4 transition-all"
+                className="group inline-flex items-center gap-2 text-primary font-medium hover:gap-4 transition-all text-sm"
               >
                 {t("about.discover")}
                 <ArrowRight className="w-4 h-4" />
@@ -140,18 +140,18 @@ export function AboutSection() {
             }`}
           >
             {/* Background decoration */}
-            <div className="absolute inset-0 bg-primary/5 rounded-2xl -rotate-3" />
+            <div className="absolute inset-0 bg-primary/5 rounded-xl sm:rounded-2xl -rotate-3 hidden sm:block" />
             
-            <div className="relative bg-card border border-border rounded-2xl p-6 lg:p-8">
-              <h3 className="font-serif text-xl font-medium text-foreground mb-6">
+            <div className="relative bg-card border border-border rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8">
+              <h3 className="font-serif text-base sm:text-xl font-medium text-foreground mb-3 sm:mb-6 text-center lg:text-left">
                 {t("about.statsTitle")}
               </h3>
               
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-3 sm:gap-6">
                 {stats.map((stat) => (
                   <div key={stat.label} className="text-center">
                     <AnimatedCounter end={stat.value} suffix={stat.suffix} />
-                    <span className="block mt-1 text-xs text-muted-foreground">
+                    <span className="block mt-0.5 sm:mt-1 text-xs text-muted-foreground">
                       {stat.label}
                     </span>
                   </div>

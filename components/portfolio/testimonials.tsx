@@ -5,31 +5,25 @@ import { ArrowRight, Quote } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 
 export function Testimonials() {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
 
   const testimonials = [
     {
-      quote: locale === "ro"
-        ? "YST Media a transformat complet operațiunile hotelului nostru. Expertiza lor în managementul veniturilor singură a crescut profitabilitatea cu 40% în primul an."
-        : "YST Media completely transformed our hotel operations. Their revenue management expertise alone increased profitability by 40% in the first year.",
+      quote: t("portfolio.testimonial1.quote"),
       author: "Maria Popescu",
-      role: locale === "ro" ? "Manager General" : "General Manager",
+      role: t("portfolio.testimonial1.role"),
       company: "Grand Palace Hotel",
     },
     {
-      quote: locale === "ro"
-        ? "Procesul de certificare părea copleșitor până am colaborat cu YST Media. Ne-au ghidat prin fiecare pas și am obținut clasificarea de 5 stele."
-        : "The certification process seemed overwhelming until we worked with YST Media. They guided us through every step and we achieved 5-star classification.",
+      quote: t("portfolio.testimonial2.quote"),
       author: "Alexandru Ionescu",
-      role: locale === "ro" ? "Proprietar" : "Owner",
+      role: t("portfolio.testimonial2.role"),
       company: "Seaside Luxury Resort",
     },
     {
-      quote: locale === "ro"
-        ? "Strategiile lor de marketing digital ne-au schimbat complet prezența online. Am văzut o creștere de 200% în rezervările directe în șase luni."
-        : "Their digital marketing strategies completely changed our online presence. We saw a 200% increase in direct bookings within six months.",
+      quote: t("portfolio.testimonial3.quote"),
       author: "Elena Dumitrescu",
-      role: locale === "ro" ? "Director Marketing" : "Marketing Director",
+      role: t("portfolio.testimonial3.role"),
       company: "Mountain View Hotel Chain",
     },
   ];
@@ -79,7 +73,7 @@ export function Testimonials() {
         <div className="mt-10 text-center">
           <Link
             href="/contact"
-            className="group inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium text-primary-foreground bg-primary rounded-full hover:bg-primary/90 transition-all duration-300"
+            className="group inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium text-primary-foreground bg-primary dark:bg-accent dark:text-accent-foreground rounded-full hover:bg-primary/90 dark:hover:bg-accent/90 transition-all duration-300"
           >
             {t("portfolio.testimonials.cta")}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

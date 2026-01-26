@@ -106,13 +106,13 @@ export function ScrollSnapSection({ children, index, className = "", bgColor }: 
       ref={sectionRef}
       data-scroll-section
       data-section-index={index}
-      className={`min-h-screen md:h-screen md:snap-start md:snap-always relative flex items-center justify-center overflow-hidden ${className}`}
+      className={`min-h-[auto] md:min-h-screen md:h-screen md:snap-start md:snap-always relative flex items-center justify-center overflow-hidden ${className}`}
       style={{
         backgroundColor: bgColor,
       }}
     >
       <div
-        className="w-full h-full flex items-center justify-center transition-all duration-500 md:duration-700 ease-out py-20 md:py-0"
+        className="w-full h-full flex items-center justify-center transition-all duration-500 md:duration-700 ease-out"
         style={{
           opacity: isVisible ? 1 : 0,
           transform: isVisible ? "translateY(0) scale(1)" : "translateY(20px) scale(0.99)",
