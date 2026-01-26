@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://ystmedia.com/</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ystmedia.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ystmedia.com/"/>
+  </url>
+  <url>
+    <loc>https://ystmedia.com/portfolio/</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ystmedia.com/portfolio/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ystmedia.com/portfolio/"/>
+  </url>
+  <url>
+    <loc>https://ystmedia.com/contact/</loc>
+    <lastmod>2026-01-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ystmedia.com/contact/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ystmedia.com/contact/"/>
+  </url>
+</urlset>

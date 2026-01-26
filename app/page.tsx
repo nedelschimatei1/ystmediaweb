@@ -1,23 +1,27 @@
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 import { ScrollSnapContainer, ScrollSnapSection, ScrollSnapDots } from "@/components/scroll-snap-container";
 import { ScrollProgress } from "@/components/parallax-effects";
 import { Navigation } from "@/components/navigation";
 import { HeroSection } from "@/components/home/hero-section";
 
+// Force static generation
+export const dynamic = "force-static";
+export const revalidate = false;
+
 // Lazy load below-the-fold components
-const AboutSection = dynamic(() => import("@/components/home/about-section").then(mod => ({ default: mod.AboutSection })), {
+const AboutSection = dynamicImport(() => import("@/components/home/about-section").then(mod => ({ default: mod.AboutSection })), {
   loading: () => <div className="min-h-screen" />,
 });
-const ServicesSection = dynamic(() => import("@/components/home/services-section").then(mod => ({ default: mod.ServicesSection })), {
+const ServicesSection = dynamicImport(() => import("@/components/home/services-section").then(mod => ({ default: mod.ServicesSection })), {
   loading: () => <div className="min-h-screen" />,
 });
-const TeamSection = dynamic(() => import("@/components/home/team-section").then(mod => ({ default: mod.TeamSection })), {
+const TeamSection = dynamicImport(() => import("@/components/home/team-section").then(mod => ({ default: mod.TeamSection })), {
   loading: () => <div className="min-h-screen" />,
 });
-const CTASection = dynamic(() => import("@/components/home/cta-section").then(mod => ({ default: mod.CTASection })), {
+const CTASection = dynamicImport(() => import("@/components/home/cta-section").then(mod => ({ default: mod.CTASection })), {
   loading: () => <div className="min-h-[50vh]" />,
 });
-const Footer = dynamic(() => import("@/components/footer").then(mod => ({ default: mod.Footer })), {
+const Footer = dynamicImport(() => import("@/components/footer").then(mod => ({ default: mod.Footer })), {
   loading: () => <div className="h-64" />,
 });
 

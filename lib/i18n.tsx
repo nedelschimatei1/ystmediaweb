@@ -47,6 +47,7 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState<Locale>("ro");
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
     // Check for saved preference or browser language
@@ -59,6 +60,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         setLocale("en");
       }
     }
+    setIsHydrated(true);
   }, []);
 
   const handleSetLocale = (newLocale: Locale) => {
@@ -72,6 +74,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     return translation[locale] || translation.ro || key;
   };
 
+  // Prevent hydration mismatch by not rendering until client is ready
+  // Use suppressHydrationWarning on critical elements instead
   return (
     <I18nContext.Provider value={{ locale, setLocale: handleSetLocale, t }}>
       {children}

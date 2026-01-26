@@ -3,6 +3,10 @@ import { Navigation } from "@/components/navigation";
 import { ContactHero } from "@/components/contact/contact-hero";
 import { FAQSchema, BreadcrumbSchema } from "@/components/structured-data";
 
+// Force static generation
+export const dynamicConfig = "force-static";
+export const revalidate = false;
+
 // Lazy load below-the-fold components
 const ScheduleConsultation = dynamic(() => import("@/components/contact/schedule-consultation").then(mod => ({ default: mod.ScheduleConsultation })));
 const ContactForm = dynamic(() => import("@/components/contact/contact-form").then(mod => ({ default: mod.ContactForm })));

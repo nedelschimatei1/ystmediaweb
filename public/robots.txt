@@ -1,0 +1,14 @@
+# robots.txt for YST Media
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://ystmedia.com/sitemap.xml
+
+# Disallow admin/private areas (if any)
+Disallow: /api/
+Disallow: /_next/
+Disallow: /404
+
+# Crawl-delay for polite bots
+Crawl-delay: 1

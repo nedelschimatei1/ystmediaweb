@@ -3,6 +3,10 @@ import { Navigation } from "@/components/navigation";
 import { PortfolioHero } from "@/components/portfolio/portfolio-hero";
 import { BreadcrumbSchema } from "@/components/structured-data";
 
+// Force static generation
+export const dynamicConfig = "force-static";
+export const revalidate = false;
+
 // Lazy load below-the-fold components
 const ProjectsGrid = dynamic(() => import("@/components/portfolio/projects-grid").then(mod => ({ default: mod.ProjectsGrid })));
 const ServicesShowcase = dynamic(() => import("@/components/portfolio/services-showcase").then(mod => ({ default: mod.ServicesShowcase })));

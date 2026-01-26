@@ -127,6 +127,73 @@
   }
 }
 
+/* ===== ULTRA-SMOOTH SCROLL SNAP ===== */
+
+/* Base smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scroll container optimizations */
+@media (min-width: 768px) {
+  .snap-mandatory {
+    scroll-snap-type: y mandatory;
+    /* Let the snap happen, our JS handles smooth scrolling for dot navigation */
+  }
+  
+  .snap-start {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}
+
+/* Disable snap on mobile for natural scrolling */
+@media (max-width: 767px) {
+  .snap-mandatory {
+    scroll-snap-type: none !important;
+  }
+}
+
+/* GPU acceleration for scroll container */
+.overscroll-none {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom scrollbar - thin and elegant */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 2px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.4);
+}
+
+/* Firefox thin scrollbar */
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.2) transparent;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .snap-mandatory {
+    scroll-snap-type: none !important;
+  }
+}
+
 /* Use dynamic viewport height for mobile */
 @supports (height: 100dvh) {
   .min-h-screen {
@@ -145,4 +212,27 @@
 
 .animate-scroll {
   animation: scroll 20s linear infinite;
+}
+
+/* Safe area padding for iOS devices with home indicator */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Bottom sheet slide-up animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out forwards;
 }

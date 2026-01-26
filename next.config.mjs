@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable static export for Hostinger
+  output: 'export',
+  trailingSlash: true,
+  
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -7,8 +11,9 @@ const nextConfig = {
   productionBrowserSourceMaps: false,
   // Enable compression (gzip/brotli)
   compress: true,
-  // Optimize images
+  // Images must be unoptimized for static export
   images: {
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
   },
   // Experimental features for better performance
