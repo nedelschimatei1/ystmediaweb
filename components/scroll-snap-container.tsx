@@ -91,13 +91,31 @@ export function ScrollSnapContainer({ children }: ScrollSnapContainerProps) {
     return () => observer.disconnect();
   }, []);
 
-  // Smooth scroll to section by index
-  const scrollToSection = useCallback((index: number, duration: number = 1000) => {
+  // Smooth scroll to section by index (or to footer if beyond last section)
+  const scrollToSection = useCallback((index: number, duration: number = 650) => {
     const container = containerRef.current;
     if (!container || isScrollingRef.current) return;
     
     const sections = container.querySelectorAll("[data-scroll-section]");
     const maxIndex = sections.length - 1;
+    
+    // If trying to scroll past the last section, scroll to the very bottom (footer)
+    if (index > maxIndex) {
+      isScrollingRef.current = true;
+      const targetPosition = container.scrollHeight - container.clientHeight;
+      
+      smoothScrollTo(container, targetPosition, duration, () => {
+        isScrollingRef.current = false;
+        currentSectionRef.current = maxIndex + 1; // Mark as "beyond last section"
+      });
+      return;
+    }
+    
+    // If scrolling back from footer to last section
+    if (index < 0) {
+      index = 0;
+    }
+    
     const clampedIndex = Math.max(0, Math.min(index, maxIndex));
     
     const section = container.querySelector(`[data-section-index="${clampedIndex}"]`) as HTMLElement;
@@ -131,7 +149,7 @@ export function ScrollSnapContainer({ children }: ScrollSnapContainerProps) {
       const timeDelta = now - lastWheelTime.current;
       
       // Reset accumulator if too much time passed (new scroll gesture)
-      if (timeDelta > 200) {
+      if (timeDelta > 150) {
         wheelAccumulatorRef.current = 0;
       }
       lastWheelTime.current = now;
@@ -140,14 +158,14 @@ export function ScrollSnapContainer({ children }: ScrollSnapContainerProps) {
       wheelAccumulatorRef.current += e.deltaY;
 
       // Threshold to trigger section change (prevents tiny scrolls from triggering)
-      const threshold = 50;
+      const threshold = 25;
       
       if (Math.abs(wheelAccumulatorRef.current) >= threshold) {
         const direction = wheelAccumulatorRef.current > 0 ? 1 : -1;
         const nextSection = currentSectionRef.current + direction;
         
         wheelAccumulatorRef.current = 0;
-        scrollToSection(nextSection, 900);
+        scrollToSection(nextSection, 600);
       }
     };
 
@@ -180,7 +198,7 @@ export function ScrollSnapContainer({ children }: ScrollSnapContainerProps) {
       if (Math.abs(deltaY) >= threshold) {
         const direction = deltaY > 0 ? 1 : -1;
         const nextSection = currentSectionRef.current + direction;
-        scrollToSection(nextSection, 800);
+        scrollToSection(nextSection, 600);
       }
     };
 
@@ -269,6 +287,15 @@ export function ScrollSnapDots() {
   const [mounted, setMounted] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
 
+  // Section labels
+  const sectionLabels = [
+    "Acasă",
+    "Despre",
+    "Servicii",
+    "Echipă",
+    "Contact",
+  ];
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -305,29 +332,43 @@ export function ScrollSnapDots() {
           key={index}
           onClick={() => !isScrolling && scrollToSection(index)}
           disabled={isScrolling}
-          className="group relative flex items-center justify-center w-5 h-5 disabled:cursor-default"
-          aria-label={`Go to section ${index + 1}`}
+          className="group relative flex items-center justify-end w-auto disabled:cursor-default"
+          aria-label={`Go to ${sectionLabels[index] || `section ${index + 1}`}`}
         >
-          {/* Outer ring - shows on hover or active */}
+          {/* Label - shows on hover */}
           <span
-            className={`absolute inset-0 rounded-full transition-all duration-500 ease-out ${
+            className={`mr-3 text-sm font-medium whitespace-nowrap transition-all duration-300 ease-out ${
               activeSection === index
-                ? "bg-primary/20 scale-150"
-                : "bg-transparent scale-100 group-hover:bg-primary/10 group-hover:scale-150"
+                ? "opacity-100 text-primary translate-x-0"
+                : "opacity-0 text-muted-foreground translate-x-2 group-hover:opacity-100 group-hover:translate-x-0"
             }`}
-          />
-          {/* Inner dot */}
-          <span
-            className={`relative z-10 rounded-full transition-all duration-300 ease-out ${
-              activeSection === index
-                ? "w-3 h-3 bg-primary shadow-lg shadow-primary/30"
-                : "w-2 h-2 bg-muted-foreground/40 group-hover:bg-primary/60 group-hover:scale-110"
-            }`}
-          />
-          {/* Ping animation for active dot */}
-          {activeSection === index && (
-            <span className="absolute inset-0 rounded-full border-2 border-primary/40 animate-ping" />
-          )}
+          >
+            {sectionLabels[index] || `Section ${index + 1}`}
+          </span>
+          
+          {/* Dot container */}
+          <div className="relative flex items-center justify-center w-5 h-5">
+            {/* Outer ring - shows on hover or active */}
+            <span
+              className={`absolute inset-0 rounded-full transition-all duration-500 ease-out ${
+                activeSection === index
+                  ? "bg-primary/20 scale-150"
+                  : "bg-transparent scale-100 group-hover:bg-primary/10 group-hover:scale-150"
+              }`}
+            />
+            {/* Inner dot */}
+            <span
+              className={`relative z-10 rounded-full transition-all duration-300 ease-out ${
+                activeSection === index
+                  ? "w-3 h-3 bg-primary shadow-lg shadow-primary/30"
+                  : "w-2 h-2 bg-muted-foreground/40 group-hover:bg-primary/60 group-hover:scale-110"
+              }`}
+            />
+            {/* Ping animation for active dot */}
+            {activeSection === index && (
+              <span className="absolute inset-0 rounded-full border-2 border-primary/40 animate-ping" />
+            )}
+          </div>
         </button>
       ))}
     </div>
