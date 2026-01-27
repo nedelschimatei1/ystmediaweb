@@ -57,11 +57,23 @@ function smoothScrollTo(
 export function ScrollSnapContainer({ children }: ScrollSnapContainerProps) {
   const [activeSection, setActiveSection] = useState(0);
   const [totalSections, setTotalSections] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isScrollingRef = useRef(false);
   const currentSectionRef = useRef(0);
   const wheelAccumulatorRef = useRef(0);
   const lastWheelTime = useRef(0);
+
+  // Detect mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.matchMedia("(max-width: 767px)").matches);
+    };
+    
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -81,7 +93,7 @@ export function ScrollSnapContainer({ children }: ScrollSnapContainerProps) {
         });
       },
       {
-        root: container,
+        root: isMobile ? null : container, // Use viewport as root on mobile
         threshold: [0.5],
       }
     );
@@ -89,7 +101,7 @@ export function ScrollSnapContainer({ children }: ScrollSnapContainerProps) {
     sections.forEach((section) => observer.observe(section));
 
     return () => observer.disconnect();
-  }, []);
+  }, [isMobile]);
 
   // Smooth scroll to section by index (or to footer if beyond last section)
   const scrollToSection = useCallback((index: number, duration: number = 650) => {
@@ -134,11 +146,7 @@ export function ScrollSnapContainer({ children }: ScrollSnapContainerProps) {
   // Handle wheel events for smooth section transitions (desktop only)
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
-
-    // Only on desktop
-    const isMobile = window.matchMedia("(max-width: 767px)").matches;
-    if (isMobile) return;
+    if (!container || isMobile) return; // Skip on mobile
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
@@ -174,56 +182,27 @@ export function ScrollSnapContainer({ children }: ScrollSnapContainerProps) {
     return () => {
       container.removeEventListener("wheel", handleWheel);
     };
-  }, [scrollToSection]);
+  }, [scrollToSection, isMobile]);
 
-  // Handle touch events for smooth section transitions (mobile)
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    let touchStartY = 0;
-    let touchEndY = 0;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-    };
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (isScrollingRef.current) return;
-      
-      touchEndY = e.changedTouches[0].clientY;
-      const deltaY = touchStartY - touchEndY;
-      const threshold = 50;
-
-      if (Math.abs(deltaY) >= threshold) {
-        const direction = deltaY > 0 ? 1 : -1;
-        const nextSection = currentSectionRef.current + direction;
-        scrollToSection(nextSection, 600);
-      }
-    };
-
-    // Only enable touch handling on mobile
-    const isMobile = window.matchMedia("(max-width: 767px)").matches;
-    if (!isMobile) return;
-
-    container.addEventListener("touchstart", handleTouchStart, { passive: true });
-    container.addEventListener("touchend", handleTouchEnd, { passive: true });
-
-    return () => {
-      container.removeEventListener("touchstart", handleTouchStart);
-      container.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, [scrollToSection]);
+  // Touch handling removed - let mobile scroll naturally like portfolio/contact pages
 
   return (
     <ScrollSnapContext.Provider value={{ activeSection, totalSections, scrollToSection }}>
       <div
         ref={containerRef}
-        className="h-screen overflow-y-auto overscroll-none"
-        style={{ 
-          WebkitOverflowScrolling: "touch",
-          overflowY: "auto",
-        }}
+        className={
+          isMobile 
+            ? "min-h-screen" // Natural document flow on mobile
+            : "h-screen overflow-y-auto overscroll-none" // Scroll container on desktop
+        }
+        style={
+          isMobile 
+            ? undefined 
+            : { 
+                WebkitOverflowScrolling: "touch",
+                overflowY: "auto",
+              }
+        }
       >
         {children}
       </div>
