@@ -15,6 +15,8 @@ export function FAQ() {
     { question: t("faq.q3"), answer: t("faq.a3") },
     { question: t("faq.q4"), answer: t("faq.a4") },
     { question: t("faq.q5"), answer: t("faq.a5") },
+    { question: t("faq.q6"), answer: t("faq.a6") },
+    { question: t("faq.q7"), answer: t("faq.a7") },
   ];
 
   return (
@@ -61,7 +63,7 @@ export function FAQ() {
                   openFaq === index ? "max-h-48" : "max-h-0"
                 )}
               >
-                <p className="px-4 pb-4 text-muted-foreground leading-relaxed text-sm">
+                <p className="px-4 pb-4 text-foreground leading-relaxed text-sm">
                   {faq.answer}
                 </p>
               </div>

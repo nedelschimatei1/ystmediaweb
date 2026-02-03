@@ -1,8 +1,8 @@
 export const contactTranslations = {
   "contact.hero.label": { ro: "Contact", en: "Contact" },
-  "contact.hero.title": { ro: "Hai să Vorbim", en: "Let's Talk" },
+  "contact.hero.title": { ro: "Hai să vorbim", en: "Let's Talk" },
   "contact.hero.desc": { 
-    ro: "Suntem aici să vă ajutăm să vă transformați viziunea în realitate. Contactați-ne pentru o consultație personalizată.", 
+    ro: "Spune-ne ce vrei să obții (mai mulți clienți, vizibilitate, vânzări). Noi îți arătăm pașii și ne ocupăm de implementare.", 
     en: "We're here to help you transform your vision into reality. Contact us for a personalized consultation." 
   },
   "contact.form.title": { ro: "Sunteți Gata să Experimentați Serviciile Noastre?", en: "Ready to Experience Our Services?" },
@@ -43,9 +43,9 @@ export const contactTranslations = {
   
   // Schedule consultation
   "schedule.label": { ro: "Programează", en: "Schedule" },
-  "schedule.title": { ro: "Programează o Consultație", en: "Schedule a Consultation" },
+  "schedule.title": { ro: "Programează o consultație", en: "Schedule a Consultation" },
   "schedule.subtitle": { 
-    ro: "Alegeți o oră convenabilă pentru a discuta despre nevoile afacerii dumneavoastră cu unul dintre experții noștri.", 
+    ro: "Alege o oră convenabilă și discutăm 15–30 de minute despre afacerea ta. Primești o direcție clară și recomandări aplicate.", 
     en: "Choose a convenient time to discuss your business needs with one of our experts." 
   },
   "schedule.quick": { ro: "Apel Rapid · 15 min", en: "Quick Call · 15 min" },
@@ -53,7 +53,7 @@ export const contactTranslations = {
     ro: "Perfect pentru întrebări rapide sau pentru a vedea dacă suntem potriviți pentru proiectul dumneavoastră.", 
     en: "Perfect for quick questions or to see if we're the right fit for your project." 
   },
-  "schedule.full": { ro: "Consultație Completă · 60 min", en: "Full Consultation · 60 min" },
+  "schedule.full": { ro: "Consultație Completă · 30 min", en: "Full Consultation · 30 min" },
   "schedule.fullDesc": { 
     ro: "Discuție aprofundată despre obiectivele, provocările și modul în care vă putem ajuta afacerea.", 
     en: "In-depth discussion about your goals, challenges, and how we can help your business." 

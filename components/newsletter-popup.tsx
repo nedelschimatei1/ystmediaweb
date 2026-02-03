@@ -64,17 +64,24 @@ export function NewsletterPopup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email) return;
     setIsSubmitting(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      // Do not send real requests from client during development/demo.
+      console.log('Newsletter subscribe (client):', { email });
+      setIsSubmitted(true);
+      localStorage.setItem('yst-newsletter-subscribed', 'true');
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    localStorage.setItem("yst-newsletter-subscribed", "true");
-
-    setTimeout(() => {
-      handleClose();
-    }, 3000);
+      setTimeout(() => {
+        handleClose();
+      }, 1500);
+    } catch (err) {
+      console.error('Newsletter subscribe error', err);
+      alert('A apărut o eroare. Încearcă din nou.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isVisible) return null;

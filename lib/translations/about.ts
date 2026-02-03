@@ -1,23 +1,24 @@
 export const aboutTranslations = {
   "about.label": { ro: "Despre Noi", en: "About Us" },
-  "about.title": { ro: "Experiența care Contează", en: "Experience that Matters" },
+  "about.title": { ro: "Cine suntem noi?", en: "Who are we?" },
   "about.desc1": { 
-    ro: "La YST Media, credem că experiența profundă și dedicarea necondiționată față de excelență sunt coloana vertebrală a succesului în industria turismului. Echipa noastră este formată din profesioniști cu o calificare impresionantă.", 
-    en: "At YST Media, we believe that deep experience and unconditional dedication to excellence are the backbone of success in the tourism industry. Our team consists of professionals with impressive qualifications." 
+    ro: "La YSTMEDIA, credem că marketingul bun pornește din experiență reală și din înțelegerea business-ului, nu din rețete standard.\n\nNu ne place să fim doar 'agenția de marketing'. Preferăm să fim partenerul tău, cel care te ajută să iei decizii mai bune, să comunici clar și să obții rezultate vizibile.", 
+    en: "At YSTMEDIA, we believe that good marketing starts from real experience and understanding the business, not from standard recipes.\n\nWe don't like being just 'the marketing agency'. We prefer to be your partner, the one who helps you make better decisions, communicate clearly and get visible results." 
   },
   "about.desc2": { 
-    ro: "Angajamentul nostru este de a lucra alături de clienții noștri ca un partener de încredere, gata să navigăm împreună prin provocările și oportunitățile unice ale industriei turismului.", 
-    en: "Our commitment is to work alongside our clients as a trusted partner, ready to navigate together through the unique challenges and opportunities of the tourism industry." 
+    ro: "Suntem foarte bine ancorați în HoReCa, dar aplicăm aceleași strategii testate și în construcții, medical, auto sau eCommerce.", 
+    en: "We are very well anchored in HoReCa, but we apply the same proven strategies in construction, medical, auto or eCommerce." 
   },
-  "about.pillar1": { ro: "Expertiză Acreditată", en: "Accredited Expertise" },
-  "about.pillar2": { ro: "Dinamică și Adaptabilitate", en: "Dynamics and Adaptability" },
-  "about.pillar3": { ro: "Confidențialitate și Siguranță", en: "Confidentiality and Security" },
-  "about.pillar4": { ro: "Implicare și Asistență Continuă", en: "Continuous Involvement and Support" },
-  "about.discover": { ro: "Descoperiți portofoliul nostru", en: "Discover our portfolio" },
-  "about.statsTitle": { ro: "Pilonii Succesului în Turism", en: "Pillars of Success in Tourism" },
+  "about.pillar1": { ro: "Lucrăm pe baza experienței reale, nu a teoriei", en: "We work based on real experience, not theory" },
+  "about.pillar2": { ro: "Comunicăm deschis și transparent", en: "We communicate openly and transparently" },
+  "about.pillar3": { ro: "Ne adaptăm rapid la piață și la obiectivele tale", en: "We adapt quickly to the market and your goals" },
+  "about.pillar4": { ro: "Suntem implicați constant și oferim suport 24/7", en: "We are constantly involved and offer 24/7 support" },
+  "about.cta1": { ro: "Obține oferta", en: "Get a quote" },
+  "about.cta2": { ro: "Portofoliul nostru", en: "Our portfolio" },
+  "about.statsTitle": { ro: "Experiența noastră în cifre", en: "Our experience in numbers" },
   "about.quote": { 
-    ro: "Soluții Inovative, Rezultate Reale. Într-o lume a turismului în continuă schimbare, YST Media se distinge prin abordări strategice adaptate.", 
-    en: "Innovative Solutions, Real Results. In an ever-changing world of tourism, YST Media stands out through adapted strategic approaches." 
+    ro: "Credem în soluții simple, bine gândite și adaptate fiecărui business.\nMarketingul trebuie să fie clar, eficient și orientat pe rezultate.", 
+    en: "We believe in simple, well-thought-out solutions adapted to each business.\nMarketing must be clear, efficient and results-oriented." 
   },
   "stats.years": { ro: "Ani de Experiență", en: "Years of Experience" },
   "stats.businesses": { ro: "Afaceri Sprijinite", en: "Businesses Supported" },

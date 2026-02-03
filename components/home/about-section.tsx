@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useInView } from "@/hooks/use-in-view";
@@ -20,14 +19,17 @@ function AnimatedCounter({ end, suffix = "" }: { end: number; suffix?: string })
   useEffect(() => {
     if (!hasStarted) return;
 
-    const duration = 2000;
-    const startTime = Date.now();
+    const duration = 1500;
+    let startTime: number | null = null;
 
-    const animate = () => {
-      const elapsed = Date.now() - startTime;
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-      const currentValue = Math.floor(end * easeOutCubic);
+      
+      // Smooth easeOutQuart for fluid motion
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      const currentValue = Math.round(end * easeOutQuart);
       
       setCount(currentValue);
 
@@ -51,17 +53,17 @@ export function AboutSection() {
   const { ref: sectionRef, isInView } = useInView();
 
   const pillars = [
-    t("about.pillar1"),
-    t("about.pillar2"),
-    t("about.pillar3"),
-    t("about.pillar4"),
+    "Lucrăm pe baza experienței reale, nu a teoriei",
+    "Comunicăm deschis și transparent",
+    "Ne adaptăm rapid la piață și la obiectivele tale",
+    "Suntem implicați constant și oferim suport 24/7",
   ];
 
   const stats = [
-    { value: 40, suffix: "+", label: t("stats.years") },
-    { value: 250, suffix: "+", label: t("stats.businesses") },
-    { value: 115, suffix: "", label: t("stats.collaborators") },
-    { value: 600, suffix: "", label: t("stats.projects") },
+    { value: 20, suffix: "+", label: t("stats.years") },
+    { value: 100, suffix: "+", label: t("stats.businesses") },
+    { value: 120, suffix: "", label: t("stats.collaborators") },
+    { value: 500, suffix: "", label: t("stats.projects") },
   ];
 
   return (
@@ -71,28 +73,28 @@ export function AboutSection() {
           {/* Left Content */}
           <div className="text-center lg:text-left">
             <span 
-              className={`text-xs font-medium uppercase tracking-widest text-primary transition-all duration-700 ${
+              className={`text-sm font-semibold uppercase tracking-widest text-primary transition-all duration-700 ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
               {t("about.label")}
             </span>
             <h2 
-              className={`mt-1.5 sm:mt-3 font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight text-foreground leading-[1.1] transition-all duration-700 delay-100 ${
+              className={`mt-2 sm:mt-4 font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight text-foreground leading-tight transition-all duration-700 delay-100 ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
               {t("about.title")}
             </h2>
             <p 
-              className={`mt-2 sm:mt-4 text-sm text-muted-foreground leading-relaxed transition-all duration-700 delay-200 ${
+              className={`mt-4 sm:mt-6 text-base sm:text-lg text-foreground/80 leading-relaxed whitespace-pre-line transition-all duration-700 delay-200 ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
               {t("about.desc1")}
             </p>
             <p 
-              className={`mt-1.5 sm:mt-3 text-sm text-muted-foreground leading-relaxed transition-all duration-700 delay-300 hidden sm:block ${
+              className={`mt-3 sm:mt-4 text-base sm:text-lg text-foreground/80 leading-relaxed whitespace-pre-line transition-all duration-700 delay-300 ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
@@ -101,35 +103,20 @@ export function AboutSection() {
 
             {/* Pillars */}
             <div 
-              className={`mt-3 sm:mt-6 grid grid-cols-2 gap-1.5 sm:gap-3 transition-all duration-700 delay-400 ${
+              className={`mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-4 transition-all duration-700 delay-400 ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
               {pillars.map((pillar, index) => (
                 <div 
                   key={pillar} 
-                  className="flex items-center gap-1.5 sm:gap-3 justify-center lg:justify-start"
+                  className="flex items-start gap-3 justify-start text-left"
                   style={{ transitionDelay: `${400 + index * 50}ms` }}
                 >
-                  <CheckCircle2 className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
-                  <span className="text-xs sm:text-base text-foreground font-medium">{pillar}</span>
+                  <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm sm:text-base lg:text-lg text-foreground font-semibold underline decoration-primary decoration-1 underline-offset-8">{pillar}</span>
                 </div>
               ))}
-            </div>
-
-            {/* CTA */}
-            <div 
-              className={`mt-3 sm:mt-6 transition-all duration-700 delay-500 ${
-                isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}
-            >
-              <Link
-                href="/portfolio"
-                className="group inline-flex items-center gap-2 text-primary font-medium hover:gap-4 transition-all text-sm"
-              >
-                {t("about.discover")}
-                <ArrowRight className="w-4 h-4" />
-              </Link>
             </div>
           </div>
 
@@ -142,8 +129,8 @@ export function AboutSection() {
             {/* Background decoration */}
             <div className="absolute inset-0 bg-primary/5 rounded-xl sm:rounded-2xl -rotate-3 hidden sm:block" />
             
-            <div className="relative bg-card border border-border rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8">
-              <h3 className="font-serif text-base sm:text-xl font-medium text-foreground mb-3 sm:mb-6 text-center lg:text-left">
+            <div className="relative bg-card border border-border rounded-xl sm:rounded-2xl p-5 sm:p-6 lg:p-8">
+              <h3 className="font-serif text-lg sm:text-xl lg:text-2xl font-medium text-foreground mb-4 sm:mb-6 text-center">
                 {t("about.statsTitle")}
               </h3>
               
@@ -151,7 +138,7 @@ export function AboutSection() {
                 {stats.map((stat) => (
                   <div key={stat.label} className="text-center">
                     <AnimatedCounter end={stat.value} suffix={stat.suffix} />
-                    <span className="block mt-0.5 sm:mt-1 text-xs text-muted-foreground">
+                    <span className="block mt-0.5 sm:mt-1 text-xs sm:text-sm text-muted-foreground">
                       {stat.label}
                     </span>
                   </div>
@@ -159,9 +146,10 @@ export function AboutSection() {
               </div>
 
               {/* Quote */}
-              <div className="mt-6 pt-6 border-t border-border">
-                <blockquote className="text-muted-foreground italic leading-relaxed text-sm">
-                  {'"'}{t("about.quote")}{'"'}
+              <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-border">
+                <blockquote className="text-foreground/70 italic leading-loose text-sm text-center">
+                  <span className="block">&ldquo;{t("about.quote").split('\n')[0]}</span>
+                  <span className="block mt-1">{t("about.quote").split('\n')[1]}&rdquo;</span>
                 </blockquote>
               </div>
             </div>

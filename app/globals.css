@@ -10,20 +10,20 @@
   --card-foreground: oklch(0.20 0.02 45);
   --popover: oklch(0.99 0.003 90);
   --popover-foreground: oklch(0.20 0.02 45);
-  --primary: oklch(0.45 0.10 45);
-  --primary-foreground: oklch(0.97 0.005 90);
+  --primary: oklch(0.55 0.18 35);
+  --primary-foreground: oklch(0.99 0.005 90);
   --secondary: oklch(0.94 0.01 90);
   --secondary-foreground: oklch(0.20 0.02 45);
   --muted: oklch(0.92 0.01 90);
-  --muted-foreground: oklch(0.50 0.02 45);
-  --accent: oklch(0.45 0.10 45);
-  --accent-foreground: oklch(0.97 0.005 90);
+  --muted-foreground: oklch(0.35 0.02 45);
+  --accent: oklch(0.55 0.18 35);
+  --accent-foreground: oklch(0.99 0.005 90);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
   --border: oklch(0.88 0.01 90);
   --input: oklch(0.92 0.01 90);
-  --ring: oklch(0.45 0.10 45);
-  --chart-1: oklch(0.45 0.10 45);
+  --ring: oklch(0.55 0.18 35);
+  --chart-1: oklch(0.55 0.18 35);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
@@ -46,20 +46,20 @@
   --card-foreground: oklch(0.95 0.005 90);
   --popover: oklch(0.15 0.01 45);
   --popover-foreground: oklch(0.95 0.005 90);
-  --primary: oklch(0.45 0.10 45);
+  --primary: oklch(0.70 0.20 35);
   --primary-foreground: oklch(0.98 0.005 90);
   --secondary: oklch(0.22 0.01 45);
   --secondary-foreground: oklch(0.95 0.005 90);
   --muted: oklch(0.20 0.01 45);
-  --muted-foreground: oklch(0.70 0.02 45);
-  --accent: oklch(0.48 0.10 45);
+  --muted-foreground: oklch(0.85 0.02 45);
+  --accent: oklch(0.70 0.20 35);
   --accent-foreground: oklch(0.98 0.005 90);
   --destructive: oklch(0.55 0.2 25);
   --destructive-foreground: oklch(0.98 0.005 90);
-  --border: oklch(0.25 0.01 45);
-  --input: oklch(0.20 0.01 45);
-  --ring: oklch(0.48 0.10 45);
-  --chart-1: oklch(0.48 0.10 45);
+  --border: oklch(0.28 0.01 45);
+  --input: oklch(0.22 0.01 45);
+  --ring: oklch(0.70 0.20 35);
+  --chart-1: oklch(0.70 0.20 35);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
@@ -235,4 +235,40 @@ html {
 
 .animate-slide-up {
   animation: slideUp 0.3s ease-out forwards;
+}
+
+/* Shine effect animation */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  animation: shine 2.5s ease-in-out infinite;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  40% {
+    left: 100%;
+  }
+  100% {
+    left: 100%;
+  }
 }

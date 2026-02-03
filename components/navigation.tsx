@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Menu, X, Globe, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n, Locale } from "@/lib/i18n";
@@ -18,6 +19,29 @@ export function Navigation() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const pathname = usePathname();
+
+  const handleLinkClick = (e: React.MouseEvent, href: string) => {
+    // Close mobile menu in all cases
+    setIsOpen(false);
+
+    // If clicking a link to the same pathname, prevent default navigation
+    // and scroll the proper container to top (supports scroll-snap container).
+    if (pathname === href.split("#")[0]) {
+      e.preventDefault();
+      const container = document.querySelector('[class*="overflow-y-auto"]') as HTMLElement | null;
+      if (container) {
+        container.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        try {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch {
+          window.scrollTo(0, 0);
+        }
+      }
+    }
+  };
 
   const navLinks = [
     { href: "/", label: t("nav.home") },
@@ -38,7 +62,7 @@ export function Navigation() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 sm:h-24">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2" onClick={(e) => handleLinkClick(e, "/") }>
             {mounted ? (
               <Image
                 src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
@@ -62,6 +86,7 @@ export function Navigation() {
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={(e) => handleLinkClick(e, link.href)}
                 className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-300"
               >
                 {link.label}
@@ -97,6 +122,7 @@ export function Navigation() {
             {/* CTA Button */}
             <Link
               href="/contact#form"
+              onClick={(e) => handleLinkClick(e, "/contact#form")}
               className="inline-flex items-center justify-center px-6 py-2.5 text-sm font-medium text-primary-foreground bg-primary dark:bg-accent dark:text-accent-foreground rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/25 active:scale-100"
             >
               {t("nav.letsChat")}
@@ -145,7 +171,7 @@ export function Navigation() {
               <Link
                 key={link.href}
                 href={link.href}
-                onClick={() => setIsOpen(false)}
+                onClick={(e) => handleLinkClick(e, link.href)}
                 className="text-lg font-medium text-muted-foreground hover:text-foreground transition-colors text-center"
               >
                 {link.label}
@@ -153,7 +179,7 @@ export function Navigation() {
             ))}
             <Link
               href="/contact#form"
-              onClick={() => setIsOpen(false)}
+              onClick={(e) => handleLinkClick(e, "/contact#form")}
               className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-primary-foreground bg-primary rounded-full transition-all duration-300 hover:scale-105 mt-2"
             >
               {t("nav.letsChat")}
