@@ -23,7 +23,7 @@ export function FAQ() {
     <section className="py-12 lg:py-16 bg-muted">
       <div className="max-w-3xl mx-auto px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-10">
+          <div className="text-center mb-10">
           <span className="text-sm font-medium uppercase tracking-widest text-primary">
             {t("faq.label")}
           </span>
@@ -46,7 +46,7 @@ export function FAQ() {
                 onClick={() => setOpenFaq(openFaq === index ? null : index)}
                 className="w-full flex items-start justify-between p-4 text-left gap-3"
               >
-                <span className="font-medium text-foreground leading-relaxed text-sm">
+                <span className="font-medium text-foreground leading-relaxed text-base md:text-lg">
                   {faq.question}
                 </span>
                 <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -63,7 +63,7 @@ export function FAQ() {
                   openFaq === index ? "max-h-48" : "max-h-0"
                 )}
               >
-                <p className="px-4 pb-4 text-foreground leading-relaxed text-sm">
+                <p className="px-4 pb-4 text-foreground leading-relaxed text-base md:text-lg">
                   {faq.answer}
                 </p>
               </div>

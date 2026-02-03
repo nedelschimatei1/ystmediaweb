@@ -243,6 +243,7 @@ html {
   overflow: hidden;
 }
 
+/* Light mode: black highlight (reversed from dark mode) */
 .btn-shine::before {
   content: '';
   position: absolute;
@@ -254,11 +255,23 @@ html {
     120deg,
     transparent 0%,
     transparent 40%,
-    rgba(255, 255, 255, 0.3) 50%,
+    rgba(0, 0, 0, 0.15) 50%,
     transparent 60%,
     transparent 100%
   );
   animation: shine 2.5s ease-in-out infinite;
+}
+
+/* Dark mode: keep original white highlight */
+.dark .btn-shine::before {
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 60%,
+    transparent 100%
+  );
 }
 
 @keyframes shine {

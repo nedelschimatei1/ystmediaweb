@@ -17,7 +17,7 @@ export const aboutTranslations = {
   "about.cta2": { ro: "Portofoliul nostru", en: "Our portfolio" },
   "about.statsTitle": { ro: "Experiența noastră în cifre", en: "Our experience in numbers" },
   "about.quote": { 
-    ro: "Credem în soluții simple, bine gândite și adaptate fiecărui business.\nMarketingul trebuie să fie clar, eficient și orientat pe rezultate.", 
+    ro: "Marketingul trebuie să fie clar, eficient și orientat pe rezultate.", 
     en: "We believe in simple, well-thought-out solutions adapted to each business.\nMarketing must be clear, efficient and results-oriented." 
   },
   "stats.years": { ro: "Ani de Experiență", en: "Years of Experience" },

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" preserveAspectRatio="xMidYMid meet">
+  <rect width="60" height="30" fill="#012169" />
+  <!-- White diagonals -->
+  <g fill="#fff">
+    <polygon points="0,0 6,0 60,24 60,30 54,30 0,6" />
+    <polygon points="60,0 54,0 0,24 0,30 6,30 60,6" />
+  </g>
+  <!-- Red diagonals -->
+  <g fill="#C8102E">
+    <polygon points="0,0 3,0 60,22.5 60,27 57,27 0,4.5" />
+    <polygon points="60,0 57,0 0,22.5 0,27 3,27 60,4.5" />
+  </g>
+  <!-- Central white cross -->
+  <rect x="24" y="0" width="12" height="30" fill="#fff" />
+  <rect x="0" y="12" width="60" height="6" fill="#fff" />
+  <!-- Central red cross -->
+  <rect x="26" y="0" width="8" height="30" fill="#C8102E" />
+  <rect x="0" y="13" width="60" height="4" fill="#C8102E" />
+</svg>

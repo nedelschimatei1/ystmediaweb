@@ -146,10 +146,23 @@ export function AboutSection() {
               </div>
 
               {/* Quote */}
-              <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-border">
-                <blockquote className="text-foreground/70 italic leading-loose text-sm text-center">
-                  <span className="block">&ldquo;{t("about.quote").split('\n')[0]}</span>
-                  <span className="block mt-1">{t("about.quote").split('\n')[1]}&rdquo;</span>
+              <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-border">
+                <blockquote className="text-foreground/70 italic leading-loose text-sm sm:text-sm text-center">
+                  {(() => {
+                    const quote = t("about.quote");
+                    const parts = quote.split('\n').map(p => p.trim()).filter(Boolean);
+                    if (parts.length === 1) {
+                      return (
+                        <span className="block">&ldquo;{parts[0]}&rdquo;</span>
+                      );
+                    }
+                    return (
+                      <>
+                        <span className="block">&ldquo;{parts[0]}</span>
+                        <span className="block mt-1">{parts[1]}&rdquo;</span>
+                      </>
+                    );
+                  })()}
                 </blockquote>
               </div>
             </div>

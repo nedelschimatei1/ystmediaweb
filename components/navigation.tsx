@@ -112,10 +112,18 @@ export function Navigation() {
             {/* Language toggle */}
             <button
               onClick={toggleLocale}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300"
-              aria-label={`Toggle language, current: ${locale.toUpperCase()}`}
+              className="flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-300"
+              aria-label={`Toggle language, current: ${locale === "ro" ? "Romanian" : "English"}`}
             >
-              <Globe className="w-4 h-4" />
+              <Image
+                src={locale === "ro" ? "/flags/ro.svg" : "/flags/gb.svg"}
+                alt={locale === "ro" ? "Romanian flag" : "British flag"}
+                width={locale === "ro" ? 24 : 32}
+                height={16}
+                className="rounded-sm object-cover h-4 w-auto"
+                style={{ width: 'auto' }}
+                loading="eager"
+              />
               <span className="uppercase">{locale}</span>
             </button>
 
@@ -145,9 +153,17 @@ export function Navigation() {
             <button
               onClick={toggleLocale}
               className="p-2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label={`Toggle language, current: ${locale.toUpperCase()}`}
+              aria-label={`Toggle language, current: ${locale === "ro" ? "Romanian" : "English"}`}
             >
-              <Globe className="w-5 h-5" />
+              <Image
+                src={locale === "ro" ? "/flags/ro.svg" : "/flags/gb.svg"}
+                alt={locale === "ro" ? "Romanian flag" : "British flag"}
+                width={locale === "ro" ? 22 : 28}
+                height={16}
+                className="rounded-sm object-cover h-4 w-auto"
+                style={{ width: 'auto' }}
+                loading="eager"
+              />
             </button>
             <button
               onClick={() => setIsOpen(!isOpen)}

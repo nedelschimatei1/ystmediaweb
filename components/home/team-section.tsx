@@ -58,7 +58,7 @@ export function TeamSection() {
           {/* Header */}
           <div className="text-center max-w-2xl mx-auto mb-4 sm:mb-8">
             <span 
-              className={`text-sm font-semibold uppercase tracking-widest text-primary transition-all duration-700 ${
+              className={`text-sm sm:text-lg font-semibold uppercase tracking-widest text-primary transition-all duration-700 ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
@@ -71,13 +71,13 @@ export function TeamSection() {
             >
               {t("team.title")}
             </h2>
-            <p 
+            {/* <p 
               className={`mt-1.5 sm:mt-3 text-sm text-muted-foreground leading-relaxed transition-all duration-700 delay-200 ${
                 isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}
             >
               {t("team.desc")}
-            </p>
+            </p> */}
           </div>
 
           {/* Team Grid */}

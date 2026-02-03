@@ -68,7 +68,7 @@ export const contactTranslations = {
   // WhatsApp support button
   "whatsapp.tooltip": { ro: "Asistență", en: "Get support" },
   "whatsapp.message": { 
-    ro: "Bună! Aș dori să aflu mai multe despre serviciile YST Media.", 
+    ro: "Bună ziua! Am nevoie de echipa YSTMedia pentru afacerea mea", 
     en: "Hello! I'd like to learn more about YST Media services." 
   },
 };

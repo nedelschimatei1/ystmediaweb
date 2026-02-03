@@ -8,7 +8,7 @@ export function WhatsAppButton() {
   const { t } = useI18n();
   const [isHovered, setIsHovered] = useState(false);
   
-  const phoneNumber = "40770435819";
+  const phoneNumber = "40721469039";
   const message = encodeURIComponent(t("whatsapp.message"));
 
   return (
