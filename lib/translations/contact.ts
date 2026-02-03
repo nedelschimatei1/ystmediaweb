@@ -34,6 +34,10 @@ export const contactTranslations = {
   "contact.info.hours": { ro: "Program", en: "Hours" },
   "contact.info.hoursValue": { ro: "Luni - Vineri: 9:00 - 19:00", en: "Mon - Fri: 9:00 AM - 7:00 PM" },
 
+  // Extra contact form fields
+  "contact.form.otherService": { ro: "Specificați (Altele)", en: "Specify (Other)" },
+  "contact.form.otherServicePlaceholder": { ro: "Spuneți-ne ce servicii doriți...", en: "Tell us which services you need..." },
+
   // Contact map section
   "contact.map.label": { ro: "Locație", en: "Location" },
   "contact.map.title": { ro: "Unde Ne Găsiți", en: "Where to Find Us" },

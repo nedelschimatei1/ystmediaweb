@@ -66,7 +66,7 @@ export default function ContactPage() {
         <ContactDivider />
 
         {/* Secondary - Contact Form */}
-        <section id="form" className="py-12 lg:py-16 bg-background scroll-mt-24">
+        <section id="form" className="py-4 lg:py-6 bg-background scroll-mt-20">
           <div className="max-w-7xl mx-auto px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
               <div className="lg:col-span-3">

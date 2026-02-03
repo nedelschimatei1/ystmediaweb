@@ -6,7 +6,7 @@ export function ContactHero() {
   const { t, locale } = useI18n();
 
   return (
-    <section className="relative pt-28 pb-10 lg:pt-32 lg:pb-12 overflow-hidden">
+    <section className="relative pt-16 pb-6 lg:pt-20 lg:pb-8 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-muted to-background" />
 

@@ -6,7 +6,7 @@ export function ContactDivider() {
   const { t } = useI18n();
 
   return (
-    <div className="py-8 bg-background">
+    <div className="py-4 bg-background">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center gap-4">
           <div className="flex-1 h-px bg-border" />

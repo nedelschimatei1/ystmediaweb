@@ -14,6 +14,7 @@ export function ContactForm() {
     email: "",
     organization: "",
     service: "",
+    otherService: "",
     message: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,12 +23,13 @@ export function ContactForm() {
   const formRef = useRef<HTMLDivElement>(null);
 
   const services = [
-    t("service.hotelManagement"),
-    t("service.certifications"),
-    t("service.seoMarketing"),
-    t("service.sustainability"),
-    t("service.mysteryShopper"),
-    t("service.other"),
+    { key: "services.hotelManagement", label: t("services.hotelManagement.title") },
+    { key: "services.certifications", label: t("services.certifications.title") },
+    { key: "services.mysteryShopper", label: t("services.mysteryShopper.title") },
+    { key: "services.seoMarketing", label: t("services.seoMarketing.title") },
+    { key: "services.sustainability", label: t("services.sustainability.title") },
+    { key: "services.gdpr", label: t("services.gdpr.title") },
+    { key: "other", label: t("service.other") },
   ];
 
   useEffect(() => {
@@ -170,15 +172,34 @@ export function ContactForm() {
               onChange={(e) => setFormData({ ...formData, service: e.target.value })}
               className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 appearance-none cursor-pointer"
             >
-              <option value="">{t("contact.form.selectService")}</option>
-              {services.map((service) => (
-                <option key={service} value={service}>
-                  {service}
+              <option value="" disabled hidden>
+                {t("contact.form.selectService")}
+              </option>
+              {services.map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.label}
                 </option>
               ))}
             </select>
           </div>
         </div>
+
+        {/* If user selects Other, show a text input to specify */}
+        {formData.service === "other" && (
+          <div>
+            <label htmlFor="otherService" className="block text-xs font-medium text-foreground mb-1.5">
+              {t("contact.form.otherService") || "Specificați (Altele)"}
+            </label>
+            <input
+              id="otherService"
+              type="text"
+              value={formData.otherService}
+              onChange={(e) => setFormData({ ...formData, otherService: e.target.value })}
+              className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300"
+              placeholder={t("contact.form.otherServicePlaceholder") || "Spuneți-ne ce servicii doriți..."}
+            />
+          </div>
+        )}
 
         {/* Message */}
         <div>

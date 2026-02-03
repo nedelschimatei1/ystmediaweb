@@ -1,10 +1,11 @@
 export const ctaTranslations = {
-  "cta.badge": { ro: "Căutați un Partener de Încredere în Afaceri?", en: "Looking for a Trusted Business Partner?" },
-  "cta.title": { ro: "Fii la Curent și Nu Rata Nimic!", en: "Stay Updated and Don't Miss Anything!" },
+  "cta.badge": { ro: "Cauți un partener de încredere pentru afacerea ta?", en: "Looking for a trusted business partner?" },
+  "cta.title": { ro: "Hai să vorbim despre cum îți putem crește business-ul", en: "Let's talk about how we can grow your business" },
   "cta.desc": { 
-    ro: "Descoperiți strategii inovative cu YST Media. Abonează-te la newsletter-ul nostru pentru a primi ultimele noutăți din industria turismului.", 
-    en: "Discover innovative strategies with YST Media. Subscribe to our newsletter to receive the latest news from the tourism industry." 
+    ro: "La YSTMEDIA lucrăm alături de tine, pas cu pas. De la strategie și conținut, până la campanii care aduc rezultate reale. Spune-ne ce obiective ai și găsim soluția potrivită.",
+    en: "At YSTMEDIA we work alongside you, step by step. From strategy and content to campaigns that deliver real results. Tell us your goals and we'll find the right solution."
   },
-  "cta.button": { ro: "Contactați-ne Astăzi", en: "Contact Us Today" },
-  "cta.hours": { ro: "Luni - Vineri: 9:00 - 19:00", en: "Mon - Fri: 9:00 AM - 7:00 PM" },
+  "cta.button": { ro: "Contactează-ne astăzi", en: "Contact Us Today" },
+  "cta.phone": { ro: "+40 721 469 039", en: "+40 721 469 039" },
+  "cta.hours": { ro: "Luni – Vineri: 09:00 – 19:00", en: "Mon – Fri: 09:00 – 19:00" },
 };

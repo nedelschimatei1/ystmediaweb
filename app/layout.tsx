@@ -6,6 +6,7 @@ import { I18nProvider } from '@/lib/i18n'
 import { NewsletterWrapper } from '@/components/newsletter-wrapper'
 import { WhatsAppButton } from '@/components/whatsapp-button'
 import { HomePageSchemas } from '@/components/structured-data'
+import SamePageLinkHandler from '@/components/same-page-link-handler'
 import './globals.css'
 
 const playfair = Playfair_Display({ 
@@ -103,6 +104,7 @@ export default function RootLayout({
         >
           <I18nProvider>
             {children}
+            <SamePageLinkHandler />
             <NewsletterWrapper />
             <WhatsAppButton />
           </I18nProvider>
