@@ -65,22 +65,34 @@ export async function POST(req: Request) {
     // Construct safe subject and text (prevent header injection)
     const notifyTo = process.env.CONTACT_NOTIFY_EMAIL || process.env.SMTP_USER || 'contact@ystmedia.com';
     const subject = forbidHeaderInjection(`New contact from ${firstName} ${lastName}`);
-    const text = `New contact submission:\n\nName: ${firstName} ${lastName}\nEmail: ${email}\nOrganization: ${organization || '-'}\nService: ${service || '-'} ${otherService ? `(${otherService})` : ''}\n\nMessage:\n${message}`;
+    const messagePreview = redactText(message, 500);
+    const text = `New contact submission:\n\nName: ${firstName} ${lastName}\nEmail: ${email}\nOrganization: ${organization || '-'}\nService: ${service || '-'} ${otherService ? `(${otherService})` : ''}\n\nMessage (preview):\n${messagePreview}`;
 
-    await sendMail({
-      to: forbidHeaderInjection(notifyTo),
-      subject,
-      text,
-    });
+    try {
+      await sendMail({
+        to: forbidHeaderInjection(notifyTo),
+        subject,
+        text,
+      });
+    } catch (e) {
+      console.error('Failed to send contact notification', e);
+    }
+
+    // Log only metadata server-side; do not log full message body
+    console.info('Contact submission received', { ip, email, name: `${firstName} ${lastName}` });
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err: any) {
-    if (err?.name === 'ZodError' || err?.issues) {      try {
+    if (err?.name === 'ZodError' || err?.issues) {
+      try {
         const { reportFailure } = await import('@/lib/rate-limit');
         await reportFailure(ip);
       } catch (e) {
         // ignore limiter failures
-      }      return new Response(JSON.stringify({ error: 'Invalid input', details: err?.issues || err?.message }), { status: 400 });
+      }
+      // Log validation details server-side (redacted in logs)
+      console.warn('Validation error on /api/contact', { ip, error: err?.name || 'ZodError' });
+      return new Response(JSON.stringify({ error: 'Invalid input' }), { status: 400 });
     }
     console.error('Contact API error', err);
     return new Response(JSON.stringify({ error: 'Server error' }), { status: 500 });

@@ -116,14 +116,16 @@ async function processMailbox() {
               console.log('No bounced recipients detected for message uid:', msg.uid);
             } else {
               for (const r of recipients) {
-                console.log(`Bounce detected: ${r} (hard=${hard})`);
-                // Notify site owner
+                console.log('Bounce detected (recipient, hard):', r, hard);
+                // Notify site owner (redacted excerpt only)
                 if (CONTACT_NOTIFY_EMAIL) {
+                  const excerptRaw = (parsed.text || parsed.html || '');
+                  const excerpt = (excerptRaw && excerptRaw.length) ? `${excerptRaw.replace(/\r|\n/g, ' ').slice(0, 300)}... [truncated for privacy]` : '';
                   await transport.sendMail({
                     from: SMTP_FROM,
                     to: CONTACT_NOTIFY_EMAIL,
                     subject: `[Bounce] ${r} (${hard ? 'hard' : 'soft'})`,
-                    text: `Detected bounce for ${r}\nHard: ${hard}\nSubject: ${parsed.subject || ''}\n\nFull excerpt:\n${(parsed.text || parsed.html || '').slice(0, 4000)}`,
+                    text: `Detected bounce for ${r}\nHard: ${hard}\nSubject: ${parsed.subject || ''}\n\nExcerpt (redacted):\n${excerpt}`,
                   });
                 }
 

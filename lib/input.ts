@@ -20,3 +20,10 @@ export function forbidHeaderInjection(value: string) {
   }
   return value;
 }
+
+export function redactText(input: string, visible = 200) {
+  if (!input) return '';
+  const s = sanitizeTextForEmail(input, visible);
+  if (input.length <= visible) return s;
+  return s + '\n\n[Message redacted for privacy - truncated]';
+}
