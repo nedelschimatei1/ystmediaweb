@@ -1,4 +1,4 @@
-# SMTP Integration, reCAPTCHA & Upstash Rate Limiting — Implementation Summary ✅
+# SMTP Integration, reCAPTCHA & Rate Limiting — Implementation Summary ✅
 
 **Date:** 2026-02-04
 
@@ -16,7 +16,7 @@ Server-side email sending, reCAPTCHA verification, and Upstash rate limiting wer
 - **Server utilities**
   - `lib/mailer.ts` — Nodemailer transport (STARTTLS support).
   - `lib/recaptcha.ts` — server-side reCAPTCHA verification helper.
-  - `lib/rate-limit.ts` — Upstash Redis + `@upstash/ratelimit` setup with two limiters.
+  - `lib/rate-limit.ts` — memory-only rate limiter with per-IP and per-email throttles (Upstash/Redis optional for horizontal scaling).
 
 - **API route handlers**
   - `app/api/contact/route.ts` — validates input, reCAPTCHA check, rate-limit, send notification email.
@@ -34,10 +34,11 @@ Server-side email sending, reCAPTCHA verification, and Upstash rate limiting wer
 ## Dependencies added ➕
 
 - `nodemailer`
-- `@upstash/redis`
-- `@upstash/ratelimit`
+- `mysql2` (server-side MySQL pool + migrations)
 
-(Installed via `npm`.)
+(Installed via `npm`).
+
+Note: Upstash packages are NOT required for the default in-memory rate limiter used by this project — add them if you opt for centralized rate limiting later.
 
 ---
 
@@ -50,8 +51,8 @@ Server-side email sending, reCAPTCHA verification, and Upstash rate limiting wer
 - `SMTP_SECURE=false`  # STARTTLS (port 587)
 - `SMTP_FROM="YST Media <no-reply@ystmedia.com>"`
 - `CONTACT_NOTIFY_EMAIL=ops@ystmedia.com`
-- `UPSTASH_REDIS_REST_URL=https://...`
-- `UPSTASH_REDIS_REST_TOKEN=...`
+- `MYSQL_HOST` `MYSQL_USER` `MYSQL_PASS` `MYSQL_DB` (required for production MySQL)
+- `MIGRATE_SUBSCRIBERS=true` (optional, one-time to import `data/subscribers.json` into MySQL)
 - `NEXT_PUBLIC_RECAPTCHA_SITE_KEY=...`
 - `RECAPTCHA_SECRET=...`
 

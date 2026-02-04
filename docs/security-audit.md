@@ -3,18 +3,19 @@
 **Date:** 2026-02-04
 
 ## Quick summary ✅
-- Overall: Good protections in place for a small-scale deployment (reCAPTCHA, Zod validation, Upstash rate limiting). Email send code and bounce handling implemented. Several important hardening steps remain before production: secrets handling, persistent storage security, DKIM/SPF/DMARC, logs/data exposure, and a few small process/race concerns.
+- Overall: Good protections in place for a small-scale deployment (reCAPTCHA, Zod validation, memory-only rate limiting). Email send code and bounce handling implemented. Several important hardening steps remain before production: secrets handling, persistent storage security, DKIM/SPF/DMARC, logs/data exposure, and a few small process/race concerns.
 
 ---
 
 ## Findings (detailed) 🔎
 
 1. Secrets and credentials
-   - All runtime secrets are read from environment variables (SMTP, IMAP, RECAPTCHA, Upstash). `.env.example` contains placeholders — good practice.
+   - All runtime secrets are read from environment variables (SMTP, IMAP, RECAPTCHA, MySQL). `.env.example` contains placeholders — good practice.
    - Risk: IMAP credentials and SMTP creds must never be committed. Ensure real `.env` or secret files are in `.gitignore` and secrets are stored in the hosting provider's secret store.
 
 2. Subscriber storage
    - Subscribers are stored in MySQL (see `lib/db.ts`). The previous `data/subscribers.json` file is ignored to avoid committing PII. **Risk:** ensure secrets are not tracked and rotate keys if needed.
+- Ensure `RECAPTCHA_SECRET` is set in production to block automated signups. The app enforces reCAPTCHA (score threshold) and rate limiting in production; the project uses a memory-only limiter by default and can be configured to use Upstash/Redis later for centralized limits across instances.
    - Recommendation: add `data/*.json` to `.gitignore` and migrate to a database for production (Supabase/Postgres).
 
 3. Input validation & payload handling
@@ -23,7 +24,7 @@
 
 4. Spam/abuse protections
    - reCAPTCHA verification implemented server-side. Good.
-   - Rate-limiting implemented with Upstash sliding-window limiters for contact and newsletter. Confirm Upstash credentials and set sensible limits per IP and per email.
+   - Rate-limiting implemented with memory-only limiters (per-IP and per-email throttles). Tune limits via env vars (`CONTACT_LIMIT`, `NEWSLETTER_LIMIT`, `NEWSLETTER_EMAIL_LIMIT`) and consider upgrading to Upstash/Redis if you run multiple instances.
 
 5. Email sending & headers
    - Nodemailer uses pooled transport with TLS enforcement and List-Unsubscribe headers added. `envelope.from` uses `SMTP_BOUNCE_EMAIL`.
@@ -31,7 +32,7 @@
 
 6. Bounce handling & worker
    - Worker polls IMAP `Bounces` folder and marks hard bounces in the subscriber JSON. Good automation for small scale.
-   - Risks: the worker writes directly to `data/subscribers.json`, which may lead to race conditions or corruption if multiple workers run concurrently. File-based storage is not atomic across instances.
+   - The bounce worker now updates subscribers in MySQL via a small helper client; this avoids file race conditions and is atomic at the DB level. Continue to be careful about logging PII from bounce messages.
    - The worker email notification includes excerpts of failed messages; be careful about logging or emailing sensitive PII.
 
 7. Unsubscribe flow
@@ -43,7 +44,7 @@
    - Avoid exposing detailed error stacks to clients.
 
 9. Dependency & runtime security
-   - New packages installed (imapflow, mailparser, nodemailer, lowdb). Keep dependencies up-to-date, run `npm audit`, and pin versions. Consider periodic dependency scanning.
+   - New packages installed (imapflow, mailparser, nodemailer, mysql2). Keep dependencies up-to-date, run `npm audit`, and pin versions. Consider periodic dependency scanning.
 
 10. CSRF & CORS
    - Next.js API routes are same-origin; forms use reCAPTCHA which helps prevent automated CSRF. If you expect cross-site POSTs, consider additional CSRF protections.
@@ -86,13 +87,13 @@
 ---
 
 ## Quick remediation checklist (practical) ✅
-- [ ] Add `data/*.json` to `.gitignore` and remove `data/subscribers.json` from the repository (git rm --cached).  
-- [ ] Move subscribers to managed DB (Supabase/Postgres) and update `lib/subscribers.ts` to use it.  
-- [ ] Rotate any credentials if they were ever committed.  
-- [ ] Hide validation details in API responses; only return a short message and log full errors server-side.  
-- [ ] Limit logs that contain PII; redact message bodies before emailing or logging.  
-- [ ] Configure DKIM/SPF/DMARC and verify with mail-tester / MXToolbox.  
-- [ ] Ensure Upstash creds are set and limits tuned for production use.  
+- [x] Add `data/*.json` to `.gitignore` and remove `data/subscribers.json` from the repository (git rm --cached).
+- [x] Move subscribers to MySQL and update `lib/subscribers.ts` to use it (see `lib/db.ts`).
+- [ ] Rotate any credentials if they were ever committed.
+- [ ] Hide validation details in API responses; only return a short message and log full errors server-side.
+- [ ] Limit logs that contain PII; redact message bodies before emailing or logging.
+- [ ] Configure DKIM/SPF/DMARC and verify with mail-tester / MXToolbox.
+- [ ] Consider adding centralized rate limiting (Upstash/Redis) if you scale to multiple instances.
 - [ ] Add monitoring/alerts for bounce rate and worker failures.
 
 ---

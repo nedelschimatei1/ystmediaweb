@@ -14,9 +14,9 @@ This document describes how the contact form and newsletter subscription flow we
 ### Contact form (/contact)
 1. Client: `components/contact/contact-form.tsx` collects user input and on submit: loads reCAPTCHA token (if site key is configured) and POSTs to `/api/contact`.
 2. Server: `app/api/contact/route.ts` receives JSON payload and does:
-   - Zod validation of inputs
-   - Rate-limiting via `lib/rate-limit.ts` (Upstash)
-   - reCAPTCHA server verification via `lib/recaptcha.ts`
+   - Zod validation of inputs and server-side sanitization
+   - Rate-limiting via `lib/rate-limit.ts` (memory-only limiter with per-IP throttles)
+   - reCAPTCHA server verification via `lib/recaptcha.ts` (enforced in production)
    - Calls `lib/mailer.ts` to send notification email to site owner (and optionally confirmation to user)
    - Returns appropriate HTTP response codes (200, 4xx, 401, 429, 500)
 3. Mail sending: `lib/mailer.ts` uses Nodemailer with pooled transport, sets envelope/headers (List-Unsubscribe support, bounce envelope) and `replyTo`
@@ -31,8 +31,8 @@ Files:
 Env vars (required)
 - SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE, SMTP_FROM
 - RECAPTCHA_SECRET
-- UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN (optional but required for rate limiting)
-
+- MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASS, MYSQL_DB (required for production subscriber storage; see `MIGRATE_SUBSCRIBERS` in `.env.example`)
+- CONTACT_LIMIT, NEWSLETTER_LIMIT, NEWSLETTER_EMAIL_LIMIT, BLOCK_THRESHOLD, BLOCK_DURATION_MS (rate limiter configuration)
 Test steps
 - Use `Mailtrap` or `smtp4dev` as SMTP and check notification arrives
 - Test reCAPTCHA failure by setting an invalid token (expect 401)
@@ -45,12 +45,12 @@ Test steps
    - Loads reCAPTCHA (client site key) and POSTs to `/api/newsletter`.
 2. Server: `app/api/newsletter/route.ts` does:
    - Zod input validation
-   - Rate-limiting (Upstash)
-   - reCAPTCHA verification
-   - Upserts the subscriber in `lib/subscribers.ts`
+   - Rate-limiting (memory-only limiter with per-IP and per-email limits)
+   - reCAPTCHA verification (enforced in production)
+   - Upserts the subscriber into MySQL via `lib/subscribers.ts`
    - Sends a confirmation email to user (includes `List-Unsubscribe` header and a tokenized unsubscribe URL)
    - Notifies site owner
-3. Subscriber store: `lib/subscribers.ts` (file-backed `lowdb` for now) holds subscribers, tokens for unsubscribe, bounce count, isBounced flag
+3. Subscriber store: `lib/subscribers.ts` — backed by MySQL (`lib/db.ts`). Tokens, bounce counts and flags are stored in the database; a one-time `MIGRATE_SUBSCRIBERS` import is available to migrate from `data/subscribers.json` if needed.
 4. Unsubscribe endpoint: `app/api/unsubscribe/route.ts` validates token and unsubscribes the email (returns a confirmation page)
 
 Files:
@@ -77,7 +77,7 @@ Test steps
 2. Workflow:
    - Webmail filter moves DSNs / bounced messages into the `Bounces` folder
    - Worker polls and parses messages, extracts bounced recipient(s), classifies hard vs soft bounces (heuristics: `5.x.x` status, "user unknown", etc.)
-   - On a hard bounce: worker **marks subscriber** in `data/subscribers.json` (field `isBounced = true` and `subscribed = false`) and notifies the site owner
+   - On a hard bounce: worker **marks subscriber** in the database (sets `isBounced = true` and `subscribed = false`) and notifies the site owner
    - Processed messages are moved to a `Processed` folder or marked Seen
 3. Integration: the newsletter send logic should skip `isBounced` or unsubscribed addresses
 
@@ -97,10 +97,9 @@ Notes:
 
 ## Rate limiting & spam protection 🛡️
 
-- Upstash + `@upstash/ratelimit` is used to enforce per-IP request limits (configured sliding windows). Files:
-  - `lib/rate-limit.ts`
-  - If Upstash is not configured, the app falls back to an in-memory limiter; this is better than nothing but only safe for single-instance deployments.
-- reCAPTCHA verification is done server-side (`lib/recaptcha.ts`) before sending or subscriber creation. **Note:** `RECAPTCHA_SECRET` is required in production; the server enforces captcha checks and rejects low-score responses.- The app uses a memory-only rate limiter by default (no Upstash). Per-IP and per-email throttles are applied, and repeated failures (e.g., captcha failures or invalid input) will increment a failure counter that temporarily blocks the IP. Configure via `CONTACT_LIMIT`, `NEWSLETTER_LIMIT`, `NEWSLETTER_EMAIL_LIMIT`, `BLOCK_THRESHOLD` and `BLOCK_DURATION_MS` env variables.- Server-side input validation with `zod` to guard the shape and sizes of payloads; inputs are also sanitized and header-injection is blocked.
+- Rate limiting is implemented with a memory-only limiter by default (per-IP sliding windows and per-email throttles). Configure limits via env vars: `CONTACT_LIMIT`, `NEWSLETTER_LIMIT`, `NEWSLETTER_EMAIL_LIMIT`, `BLOCK_THRESHOLD`, and `BLOCK_DURATION_MS`. Upstash/Redis can be added later if you need centralized limits across multiple instances.
+- reCAPTCHA verification is done server-side (`lib/recaptcha.ts`) before sending or subscriber creation. **Note:** `RECAPTCHA_SECRET` is required in production; the server enforces captcha checks and rejects low-score responses.
+- Server-side input validation with `zod` to guard the shape and sizes of payloads; inputs are also sanitized and header-injection is blocked.
 
 ---
 
@@ -121,8 +120,8 @@ Notes:
 - `app/api/unsubscribe/route.ts` — unsubscribe handling
 - `lib/mailer.ts` — Nodemailer transport + pooling + headers
 - `lib/recaptcha.ts` — reCAPTCHA server verification
-- `lib/rate-limit.ts` — Upstash rate limiters
-- `lib/subscribers.ts` — subscriber store (lowdb)
+- `lib/rate-limit.ts` — memory-only limiter with per-IP and per-email throttles
+- `lib/subscribers.ts` — subscriber store backed by MySQL (`lib/db.ts`)
 - `workers/bounce-parser.js` — IMAP bounce processor
 - `.env.example` — all required environment variables
 - `docs/smtp-integration.md` — integration summary
