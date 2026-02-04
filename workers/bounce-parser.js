@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+const pino = require('pino');
+const logger = pino({ level: process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'info' : 'debug') });
 const { ImapFlow } = require('imapflow');
 const { simpleParser } = require('mailparser');
 const nodemailer = require('nodemailer');
@@ -20,7 +22,7 @@ const SMTP_FROM = process.env.SMTP_FROM || `no-reply@${SMTP_HOST}`;
 const CONTACT_NOTIFY_EMAIL = process.env.CONTACT_NOTIFY_EMAIL;
 
 if (!IMAP_USER || !IMAP_PASS) {
-  console.error('IMAP credentials are required. Set IMAP_USER and IMAP_PASS in env.');
+  logger.error('IMAP credentials are required. Set IMAP_USER and IMAP_PASS in env.');
   process.exit(1);
 }
 
@@ -89,7 +91,20 @@ async function processMailbox() {
   });
 
   await client.connect();
-  console.log('Connected to IMAP');
+  logger.info('Connected to IMAP');
+
+  function redactEmail(e) {
+    try {
+      const parts = String(e || '').split('@');
+      if (!parts[1]) return e;
+      const local = parts[0];
+      const domain = parts[1];
+      if (local.length <= 2) return `***@${domain}`;
+      return `${local[0]}***${local.slice(-1)}@${domain}`;
+    } catch (err) {
+      return e;
+    }
+  }
 
   const transport = await createSmtpTransport();
 
@@ -102,7 +117,7 @@ async function processMailbox() {
         // Search for unseen messages
         const messages = await client.search({ seen: false });
         if (messages && messages.length) {
-          console.log(`Found ${messages.length} new messages in ${IMAP_BOUNCE_FOLDER}`);
+          logger.info({ count: messages.length, folder: IMAP_BOUNCE_FOLDER }, `Found new bounce messages`);
         }
 
         for (const seq of messages) {
@@ -113,10 +128,11 @@ async function processMailbox() {
             const hard = isHardBounce(parsed);
 
             if (recipients.length === 0) {
-              console.log('No bounced recipients detected for message uid:', msg.uid);
+              logger.info({ uid: msg.uid }, 'No bounced recipients detected');
             } else {
               for (const r of recipients) {
-                console.log('Bounce detected (recipient, hard):', r, hard);
+                const rRed = redactEmail(r);
+                logger.info({ recipient: rRed, hard }, 'Bounce detected');
                 // Notify site owner (redacted excerpt only)
                 if (CONTACT_NOTIFY_EMAIL) {
                   const excerptRaw = (parsed.text || parsed.html || '');
@@ -124,8 +140,8 @@ async function processMailbox() {
                   await transport.sendMail({
                     from: SMTP_FROM,
                     to: CONTACT_NOTIFY_EMAIL,
-                    subject: `[Bounce] ${r} (${hard ? 'hard' : 'soft'})`,
-                    text: `Detected bounce for ${r}\nHard: ${hard}\nSubject: ${parsed.subject || ''}\n\nExcerpt (redacted):\n${excerpt}`,
+                    subject: `[Bounce] ${rRed} (${hard ? 'hard' : 'soft'})`,
+                    text: `Detected bounce for ${rRed}\nHard: ${hard}\nSubject: ${parsed.subject || ''}\n\nExcerpt (redacted):\n${excerpt}`,
                   });
                 }
 
@@ -133,9 +149,9 @@ async function processMailbox() {
                 try {
                   const client = require('./subscriber-client');
                   await client.markBounce(r, hard);
-                  console.log('Updated subscriber bounce state for', r);
+                  logger.info({ recipient: rRed }, 'Updated subscriber bounce state');
                 } catch (e) {
-                  console.warn('Failed to update subscribers DB', e?.message || e);
+                  logger.warn({ err: e }, 'Failed to update subscribers DB');
                 }
               }
             }
@@ -147,11 +163,11 @@ async function processMailbox() {
               });
               await client.messageMove(msg.uid, IMAP_PROCESSED_FOLDER);
             } catch (e) {
-              console.warn('Failed to move message, marking as seen:', e?.message || e);
+              logger.warn({ err: e }, 'Failed to move message, marking as seen');
               await client.messageFlagsAdd(msg.uid, ['\Seen']);
             }
           } catch (msgErr) {
-            console.error('Error processing message', msgErr);
+            logger.error({ err: msgErr }, 'Error processing message');
           }
         }
       } finally {
@@ -159,7 +175,7 @@ async function processMailbox() {
         await client.mailboxClose();
       }
     } catch (err) {
-      console.error('IMAP polling error', err);
+      logger.error({ err }, 'IMAP polling error');
     }
 
     await new Promise((r) => setTimeout(r, IMAP_POLL_INTERVAL_SECONDS * 1000));

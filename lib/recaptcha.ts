@@ -1,7 +1,9 @@
+import logger from './logger';
+
 export async function verifyRecaptcha(token: string | undefined, action: string) {
   const secret = process.env.RECAPTCHA_SECRET;
   if (!secret) {
-    console.warn('RECAPTCHA_SECRET is not set. Skipping verification (not recommended for production).');
+    logger.warn('RECAPTCHA_SECRET is not set. Skipping verification (not recommended for production).');
     return { success: true, score: 1 };
   }
 

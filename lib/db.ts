@@ -1,6 +1,7 @@
 import mysql from 'mysql2/promise';
 import fs from 'fs/promises';
 import { join } from 'path';
+import logger from './logger';
 
 let pool: mysql.Pool | null = null;
 
@@ -59,7 +60,7 @@ export async function initDb() {
         }
       }
     } catch (e) {
-      console.warn('[db] migration failed', e);
+      logger.warn({ err: e }, '[db] migration failed');
     }
   }
 

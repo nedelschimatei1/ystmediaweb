@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { sendMail } from '@/lib/mailer';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { contactLimiter } from '@/lib/rate-limit';
+import logger from '@/lib/logger';
 
 export async function POST(req: Request) {
   try {
@@ -18,7 +19,7 @@ export async function POST(req: Request) {
       }
     } catch (e) {
       // If rate limiter misconfigured, allow through but log
-      console.warn('Rate limiter error', e);
+      logger.warn({ err: e }, 'Rate limiter error');
     }
 
     const body = await req.json();
@@ -41,7 +42,7 @@ export async function POST(req: Request) {
     const recaptcha = await verifyRecaptcha(parsed.token, 'contact');
     if (recaptchaSecret && process.env.NODE_ENV === 'production') {
       if (!recaptcha.success || (recaptcha.score && recaptcha.score < 0.45)) {
-        console.warn('reCAPTCHA failed for contact', { ip, recaptcha });
+        logger.warn({ ip, recaptcha }, 'reCAPTCHA failed for contact');
         try {
           const { reportFailure } = await import('@/lib/rate-limit');
           await reportFailure(ip);
@@ -49,7 +50,7 @@ export async function POST(req: Request) {
         return new Response(JSON.stringify({ error: 'reCAPTCHA verification failed' }), { status: 401 });
       }
     } else if (!recaptchaSecret) {
-      console.warn('RECAPTCHA_SECRET not set — skipping verification for contact.');
+      logger.warn('RECAPTCHA_SECRET not set — skipping verification for contact.');
     }
 
     // Sanitize inputs
@@ -75,11 +76,16 @@ export async function POST(req: Request) {
         text,
       });
     } catch (e) {
-      console.error('Failed to send contact notification', e);
+      logger.error({ err: e }, 'Failed to send contact notification');
     }
 
     // Log only metadata server-side; do not log full message body
-    console.info('Contact submission received', { ip, email, name: `${firstName} ${lastName}` });
+    try {
+      const { redactEmail } = await import('@/lib/input');
+      logger.info({ ip, email: redactEmail(email), name: `${firstName} ${lastName}` }, 'Contact submission received');
+    } catch (e) {
+      logger.info({ ip, name: `${firstName} ${lastName}` }, 'Contact submission received');
+    }
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err: any) {
@@ -91,10 +97,10 @@ export async function POST(req: Request) {
         // ignore limiter failures
       }
       // Log validation details server-side (redacted in logs)
-      console.warn('Validation error on /api/contact', { ip, error: err?.name || 'ZodError' });
+      logger.warn({ ip, error: err?.name || 'ZodError' }, 'Validation error on /api/contact');
       return new Response(JSON.stringify({ error: 'Invalid input' }), { status: 400 });
     }
-    console.error('Contact API error', err);
+    logger.error({ err: err }, 'Contact API error');
     return new Response(JSON.stringify({ error: 'Server error' }), { status: 500 });
   }
 }

@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { sendMail } from '@/lib/mailer';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { newsletterLimiter } from '@/lib/rate-limit';
+import logger from '@/lib/logger';
 
 export async function POST(req: Request) {
   try {
@@ -13,7 +14,7 @@ export async function POST(req: Request) {
         return new Response(JSON.stringify({ error: 'Too many requests' }), { status: 429 });
       }
     } catch (e) {
-      console.warn('Newsletter rate limiter error', e);
+      logger.warn({ err: e }, 'Newsletter rate limiter error');
     }
 
     const body = await req.json();
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
     if (recaptchaSecret && process.env.NODE_ENV === 'production') {
       recaptcha = await verifyRecaptcha(parsed.token, 'newsletter');
       if (!recaptcha.success || (recaptcha.score && recaptcha.score < 0.45)) {
-        console.warn('reCAPTCHA failed for newsletter', { ip, recaptcha });
+        logger.warn({ ip, recaptcha }, 'reCAPTCHA failed for newsletter');
         try {
           const { reportFailure } = await import('@/lib/rate-limit');
           await reportFailure(ip);
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
     } else {
       // local/dev: allow but log for visibility
       recaptcha = { success: true, score: 1 } as const;
-      if (!recaptchaSecret) console.warn('RECAPTCHA_SECRET not set — skipping verification for newsletter.');
+      if (!recaptchaSecret) logger.warn('RECAPTCHA_SECRET not set — skipping verification for newsletter.');
     }
 
     // Normalize and sanitize email before DB call
@@ -98,7 +99,14 @@ export async function POST(req: Request) {
         },
       });
     } catch (e) {
-      console.warn('Failed to send confirmation email', e);
+      logger.warn({ err: e }, 'Failed to send confirmation email');
+    }
+
+    try {
+      const { redactEmail } = await import('@/lib/input');
+      logger.info({ ip, email: redactEmail(email) }, 'Newsletter subscription');
+    } catch (e) {
+      logger.info({ ip }, 'Newsletter subscription');
     }
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
@@ -108,10 +116,10 @@ export async function POST(req: Request) {
         const { reportFailure } = await import('@/lib/rate-limit');
         await reportFailure(ip);
       } catch (e) {}
-      console.warn('Validation error on /api/newsletter', { ip });
+      logger.warn({ ip }, 'Validation error on /api/newsletter');
       return new Response(JSON.stringify({ error: 'Invalid input' }), { status: 400 });
     }
-    console.error('Newsletter API error', err);
+    logger.error({ err }, 'Newsletter API error');
     return new Response(JSON.stringify({ error: 'Server error' }), { status: 500 });
   }
 }

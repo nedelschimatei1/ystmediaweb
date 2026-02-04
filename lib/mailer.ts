@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import logger from './logger';
 
 const SMTP_HOST = process.env.SMTP_HOST;
 const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
@@ -10,7 +11,7 @@ const SMTP_ALLOW_INSECURE = process.env.SMTP_ALLOW_INSECURE === 'true';
 
 if (!SMTP_HOST || ((!SMTP_USER || !SMTP_PASS) && !SMTP_ALLOW_INSECURE)) {
   // Do not throw during import to keep dev experience pleasant; throw when trying to send.
-  console.warn('SMTP is not fully configured. Set SMTP_HOST, SMTP_USER and SMTP_PASS in env to enable sending emails, or set SMTP_ALLOW_INSECURE=true for local testing without auth.');
+  logger.warn('SMTP is not fully configured. Set SMTP_HOST, SMTP_USER and SMTP_PASS in env to enable sending emails, or set SMTP_ALLOW_INSECURE=true for local testing without auth.');
 }
 // Extra optional settings
 const SMTP_BOUNCE_EMAIL = process.env.SMTP_BOUNCE_EMAIL;
@@ -19,7 +20,7 @@ const SMTP_LIST_UNSUBSCRIBE_URL = process.env.SMTP_LIST_UNSUBSCRIBE_URL; // opti
 const SMTP_REPLY_TO = process.env.SMTP_REPLY_TO;
 
 if (!SMTP_BOUNCE_EMAIL) {
-  console.warn('SMTP_BOUNCE_EMAIL is not set. Bounces will be delivered to SMTP_FROM or the envelope from address.');
+  logger.warn('SMTP_BOUNCE_EMAIL is not set. Bounces will be delivered to SMTP_FROM or the envelope from address.');
 }
 
 export const transporter = nodemailer.createTransport({
