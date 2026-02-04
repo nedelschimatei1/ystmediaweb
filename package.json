@@ -53,6 +53,7 @@
     "imapflow": "^1.2.8",
     "input-otp": "1.4.1",
     "lowdb": "^7.0.1",
+    "mysql2": "^3.3.3",
     "lucide-react": "^0.454.0",
     "mailparser": "^3.9.3",
     "next": "^16.1.6",

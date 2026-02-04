@@ -127,22 +127,11 @@ async function processMailbox() {
                   });
                 }
 
-                // Mark bounce in subscribers store if present
+                // Mark bounce in subscribers store if present (MySQL)
                 try {
-                  const subsFile = require('path').join(process.cwd(), 'data', 'subscribers.json');
-                  const fs = require('fs');
-                  const db = JSON.parse(fs.readFileSync(subsFile, 'utf-8'));
-                  const idx = (db.subscribers || []).findIndex(s => s.email.toLowerCase() === r.toLowerCase());
-                  if (idx !== -1) {
-                    db.subscribers[idx].bounceCount = (db.subscribers[idx].bounceCount || 0) + 1;
-                    if (hard) {
-                      db.subscribers[idx].isBounced = true;
-                      db.subscribers[idx].subscribed = false;
-                      db.subscribers[idx].unsubscribedAt = new Date().toISOString();
-                    }
-                    fs.writeFileSync(subsFile, JSON.stringify(db, null, 2));
-                    console.log('Updated subscriber bounce state for', r);
-                  }
+                  const client = require('./subscriber-client');
+                  await client.markBounce(r, hard);
+                  console.log('Updated subscriber bounce state for', r);
                 } catch (e) {
                   console.warn('Failed to update subscribers DB', e?.message || e);
                 }

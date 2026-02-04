@@ -134,7 +134,7 @@ Notes:
 1. Configure `.env.local` from `.env.example` (set SMTP and IMAP test credentials). Use `Mailtrap` or `smtp4dev` for SMTP and a test IMAP mailbox for bounces.
 2. Start dev server: `npm run dev` and test contact form and newsletter submission flows.
 3. Run the bounce worker locally: `npm run bounce-worker` and simulate DSNs (or create a rule to detect test bounce messages).
-4. Check `data/subscribers.json` or query `lib/subscribers.ts` to see updated `bounceCount` and `isBounced` flags.
+4. Check your DB or query `lib/subscribers.ts` (`listSubscribers`, `getSubscriber`) to see updated `bounceCount` and `isBounced` flags.
 5. Verify headers in received email: `List-Unsubscribe`, `Reply-To`, and `Message-ID`.
 
 ---

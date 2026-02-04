@@ -136,14 +136,14 @@ export function ownerNotificationTemplate(email: string, locale: 'ro' | 'en' = '
     const title = 'New newsletter subscription';
     const pre = 'A new subscriber has joined your list.';
     const body = `<p style=\"margin:0 0 8px;\"><strong>${email}</strong> subscribed to the newsletter.</p>`;
-    const footer = `<p style=\"margin:0;color:#6b7280;font-size:13px;\">View subscribers in your dashboard or in <code>data/subscribers.json</code>.</p>`;
+    const footer = `<p style=\"margin:0;color:#6b7280;font-size:13px;\">View subscribers in your dashboard or in your database.</p>`;
     return { subject: `New newsletter subscriber: ${email}`, text: `${email} subscribed\n\n${COMPANY_NAME}${COMPANY_ADDRESS ? ' • ' + COMPANY_ADDRESS : ''} • ${COMPANY_CONTACT_EMAIL}`, html: wrapperHtml(title, pre, body, footer, '') };
   }
 
   const title = 'Abonare nouă la newsletter';
   const pre = 'Un nou abonat s-a alăturat listei.';
   const body = `<p style=\"margin:0 0 8px;\"><strong>${email}</strong> s-a abonat la newsletter.</p>`;
-  const footer = `<p style=\"margin:0;color:#6b7280;font-size:13px;\">Vezi abonații în <code>data/subscribers.json</code> sau în dashboard.</p>`;
+  const footer = `<p style=\"margin:0;color:#6b7280;font-size:13px;\">Vezi abonații în dashboard sau în baza de date.</p>`;
   return { subject: `Abonat nou: ${email}`, text: `${email} s-a abonat\n\n${COMPANY_NAME}${COMPANY_ADDRESS ? ' • ' + COMPANY_ADDRESS : ''} • ${COMPANY_CONTACT_EMAIL}`, html: wrapperHtml(title, pre, body, footer, '') };
 }
 

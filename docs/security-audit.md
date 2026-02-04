@@ -14,7 +14,7 @@
    - Risk: IMAP credentials and SMTP creds must never be committed. Ensure real `.env` or secret files are in `.gitignore` and secrets are stored in the hosting provider's secret store.
 
 2. Subscriber storage
-   - Subscribers are stored in `data/subscribers.json` (file-backed `lowdb`). That file currently exists in the repo (`data/subscribers.json`). **Risk:** committed subscriber data would expose PII.
+   - Subscribers are stored in MySQL (see `lib/db.ts`). The previous `data/subscribers.json` file is ignored to avoid committing PII. **Risk:** ensure secrets are not tracked and rotate keys if needed.
    - Recommendation: add `data/*.json` to `.gitignore` and migrate to a database for production (Supabase/Postgres).
 
 3. Input validation & payload handling
