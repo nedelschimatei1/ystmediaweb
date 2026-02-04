@@ -13,6 +13,7 @@ export const newsletterTranslations = {
     ro: "Veți primi în curând cele mai noi informații și sfaturi pentru scalarea afacerii tale.",
     en: "You'll soon receive the latest information and tips for scaling your business."
   },
+  "newsletter.success.cta": { ro: "Vezi ultimele", en: "See latest" },
   "newsletter.privacy": { ro: "Ne pasă de datele tale. Citește", en: "We care about your data. Read our" },
   "newsletter.privacyLink": { ro: "Politica de Confidențialitate", en: "Privacy Policy" },
   "newsletter.close": { ro: "Închide", en: "Close" },

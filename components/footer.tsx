@@ -64,6 +64,7 @@ export function Footer() {
                 <li key={link.href + link.label}>
                   <Link
                     href={link.href}
+                    prefetch={false}
                     className="text-background/70 hover:text-background transition-colors text-sm"
                   >
                     {link.label}
@@ -83,6 +84,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
+                    prefetch={false}
                     className="text-background/70 hover:text-background transition-colors text-sm"
                   >
                     {link.label}
@@ -134,12 +136,14 @@ export function Footer() {
           <div className="flex items-center gap-4">
             <Link
               href="/contact"
+              prefetch={false}
               className="text-background/70 hover:text-background transition-colors text-xs underline"
             >
               {t("footer.privacy")}
             </Link>
             <Link
               href="/contact"
+              prefetch={false}
               className="text-background/70 hover:text-background transition-colors text-xs underline"
             >
               {t("footer.terms")}

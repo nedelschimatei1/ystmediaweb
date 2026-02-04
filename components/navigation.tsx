@@ -86,8 +86,10 @@ export function Navigation() {
               <Link
                 key={link.href}
                 href={link.href}
+                prefetch={false}
                 onClick={(e) => handleLinkClick(e, link.href)}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-300"
+                className="inline-flex items-center justify-center transform-gpu backface-hidden antialiased px-6 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted dark:bg-muted/10 dark:hover:bg-muted/20 rounded-full transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/40 dark:hover:shadow-primary/40 active:translate-y-0"
+                style={{ willChange: 'transform' }}
               >
                 {link.label}
               </Link>
@@ -130,6 +132,7 @@ export function Navigation() {
             {/* CTA Button */}
             <Link
               href="/contact#form"
+              prefetch={false}
               onClick={(e) => handleLinkClick(e, "/contact#form")}
               className="inline-flex items-center justify-center px-6 py-2.5 text-sm font-medium text-primary-foreground bg-primary dark:bg-accent dark:text-accent-foreground rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/25 active:scale-100"
             >
@@ -187,6 +190,7 @@ export function Navigation() {
               <Link
                 key={link.href}
                 href={link.href}
+                prefetch={false}
                 onClick={(e) => handleLinkClick(e, link.href)}
                 className="text-lg font-medium text-muted-foreground hover:text-foreground transition-colors text-center"
               >
@@ -195,6 +199,7 @@ export function Navigation() {
             ))}
             <Link
               href="/contact#form"
+              prefetch={false}
               onClick={(e) => handleLinkClick(e, "/contact#form")}
               className="inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-primary-foreground bg-primary rounded-full transition-all duration-300 hover:scale-105 mt-2"
             >

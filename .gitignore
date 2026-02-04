@@ -27,3 +27,45 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# -----------------------------------------------------------------------------
+# Security / privacy: ignore sensitive data and artifacts
+# -----------------------------------------------------------------------------
+# Personal data and exports (do NOT commit subscriber lists or PII)
+/data/subscribers.json
+# any other generated JSON holding private data
+data/*.secret.json
+
+# Credentials, keys & certificates
+*.pem
+*.key
+*.p12
+*.jks
+*.pfx
+credentials.json
+*.crt
+*.cer
+
+# Local IDE / editor and system files
+.vscode/
+.history/
+.DS_Store
+Thumbs.db
+
+# Temp, caches, coverage
+.cache/
+tmp/
+temp/
+uploads/
+coverage/
+.nyc_output/
+
+# Build / dist artifacts
+dist/
+
+# Lint / package manager cache
+.eslintcache
+.yarn-integrity
+
+# Local function settings (Azure etc.)
+local.settings.json

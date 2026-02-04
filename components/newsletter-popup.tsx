@@ -7,8 +7,9 @@ import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 
 export function NewsletterPopup() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [isVisible, setIsVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isClosing, setIsClosing] = useState(false);
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,17 +69,45 @@ export function NewsletterPopup() {
     setIsSubmitting(true);
 
     try {
-      // Do not send real requests from client during development/demo.
-      console.log('Newsletter subscribe (client):', { email });
+      let token: string | undefined;
+      const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+      if (siteKey) {
+        try {
+          if (!(window as any).grecaptcha) {
+            await new Promise<void>((resolve, reject) => {
+              const s = document.createElement('script');
+              s.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
+              s.async = true;
+              s.onload = () => resolve();
+              s.onerror = () => reject(new Error('reCAPTCHA load error'));
+              document.head.appendChild(s);
+            });
+          }
+          token = await (window as any).grecaptcha.execute(siteKey, { action: 'newsletter' });
+        } catch (err) {
+          console.warn('reCAPTCHA error', err);
+        }
+      }
+
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, token, locale }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Subscription failed');
+
       setIsSubmitted(true);
       localStorage.setItem('yst-newsletter-subscribed', 'true');
+      setErrorMessage(null);
 
       setTimeout(() => {
         handleClose();
       }, 1500);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Newsletter subscribe error', err);
-      alert('A apărut o eroare. Încearcă din nou.');
+      setErrorMessage(err?.message || 'A apărut o eroare. Încearcă din nou.');
     } finally {
       setIsSubmitting(false);
     }
@@ -166,6 +195,9 @@ export function NewsletterPopup() {
                 <p className="mt-2 text-sm text-muted-foreground">
                   {t("newsletter.success.desc")}
                 </p>
+                <div className="mt-4 flex items-center justify-center gap-3">
+                  <a href="/" className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md font-medium hover:bg-primary/90 transition-colors">{t("newsletter.success.cta")}</a>
+                </div>
               </div>
             ) : (
               <>
@@ -178,6 +210,7 @@ export function NewsletterPopup() {
                     <input
                       type="email"
                       required
+                      disabled={isSubmitting}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder={t("newsletter.placeholder")}
@@ -187,6 +220,9 @@ export function NewsletterPopup() {
                         "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       )}
                     />
+                    {errorMessage && (
+                      <p className="mt-2 text-sm text-destructive text-center">{errorMessage}</p>
+                    )}
                   </div>
 
                   <button

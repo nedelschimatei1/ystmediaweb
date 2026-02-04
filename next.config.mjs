@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable static export for Hostinger
-  output: 'export',
+  // Note: removed static export so server routes (API) can run
+  // trailingSlash kept for legacy exported URLs
   trailingSlash: true,
   
   typescript: {

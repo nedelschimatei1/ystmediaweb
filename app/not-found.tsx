@@ -43,6 +43,7 @@ export default function NotFound() {
           </Link>
           <Link
             href="/contact"
+            prefetch={false}
             className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-border rounded-full font-medium hover:bg-muted transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -62,12 +63,14 @@ export default function NotFound() {
             </Link>
             <Link
               href="/portfolio"
+              prefetch={false}
               className="px-4 py-2 text-sm bg-muted rounded-full hover:bg-muted/80 transition-colors"
             >
               Portofoliu
             </Link>
             <Link
               href="/contact"
+              prefetch={false}
               className="px-4 py-2 text-sm bg-muted rounded-full hover:bg-muted/80 transition-colors"
             >
               Contact

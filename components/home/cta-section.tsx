@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { ArrowRight, Phone, Clock } from "lucide-react";
+import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useInView } from "@/hooks/use-in-view";
 
 export function CTASection() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { ref: sectionRef, isInView } = useInView({ threshold: 0.2 });
 
   return (
@@ -62,6 +64,7 @@ export function CTASection() {
           >
             <Link
               href="/contact#form"
+              prefetch={false}
               className="group inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-2.5 sm:py-3.5 text-sm font-medium bg-white text-black rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-100"
             >
               {t("cta.button")}

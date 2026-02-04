@@ -57,15 +57,53 @@ export function ContactForm() {
     return () => observer.disconnect();
   }, []);
 
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const loadRecaptcha = (siteKey: string) => {
+    return new Promise<void>((resolve, reject) => {
+      if ((window as any).grecaptcha) return resolve();
+      const script = document.createElement('script');
+      script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = (err) => reject(err);
+      document.head.appendChild(script);
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
+
+    try {
+      let token: string | undefined = undefined;
+      const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+      if (siteKey) {
+        try {
+          await loadRecaptcha(siteKey);
+          token = await (window as any).grecaptcha.execute(siteKey, { action: 'contact' });
+        } catch (err) {
+          console.warn('reCAPTCHA load/execute error', err);
+        }
+      }
+
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formData, token }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Submission failed');
+
+      setIsSubmitted(true);
+    } catch (err: any) {
+      console.error('Contact submit error', err);
+      setSubmitError(err?.message || 'An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {
@@ -99,6 +137,9 @@ export function ContactForm() {
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {submitError && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">{submitError}</div>
+        )}
         {/* Name row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -109,6 +150,7 @@ export function ContactForm() {
               type="text"
               id="firstName"
               required
+              disabled={isSubmitting}
               value={formData.firstName}
               onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
               className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300"
@@ -123,6 +165,7 @@ export function ContactForm() {
               type="text"
               id="lastName"
               required
+              disabled={isSubmitting}
               value={formData.lastName}
               onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
               className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300"
@@ -140,6 +183,7 @@ export function ContactForm() {
             type="email"
             id="email"
             required
+            disabled={isSubmitting}
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300"
@@ -156,6 +200,7 @@ export function ContactForm() {
             <input
               type="text"
               id="organization"
+              disabled={isSubmitting}
               value={formData.organization}
               onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
               className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300"
@@ -169,6 +214,7 @@ export function ContactForm() {
             <select
               id="service"
               value={formData.service}
+              disabled={isSubmitting}
               onChange={(e) => setFormData({ ...formData, service: e.target.value })}
               className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 appearance-none cursor-pointer"
             >
@@ -193,6 +239,7 @@ export function ContactForm() {
             <input
               id="otherService"
               type="text"
+              disabled={isSubmitting}
               value={formData.otherService}
               onChange={(e) => setFormData({ ...formData, otherService: e.target.value })}
               className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300"
@@ -209,6 +256,7 @@ export function ContactForm() {
           <textarea
             id="message"
             required
+            disabled={isSubmitting}
             rows={4}
             value={formData.message}
             onChange={(e) => setFormData({ ...formData, message: e.target.value })}

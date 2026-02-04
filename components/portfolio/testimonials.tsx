@@ -73,6 +73,7 @@ export function Testimonials() {
         <div className="mt-10 text-center">
           <Link
             href="/contact"
+            prefetch={false}
             className="group inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium text-primary-foreground bg-primary dark:bg-accent dark:text-accent-foreground rounded-full hover:bg-primary/90 dark:hover:bg-accent/90 transition-all duration-300"
           >
             {t("portfolio.testimonials.cta")}
