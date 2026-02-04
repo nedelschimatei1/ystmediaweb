@@ -4,7 +4,7 @@
 
 ## Summary
 
-Server-side email sending, reCAPTCHA verification, and Upstash rate limiting were implemented and the contact & newsletter flows were wired to server APIs. Set environment variables and test with a staging SMTP/Upstash account before going to production.
+Server-side email sending, reCAPTCHA verification, and a memory-only rate limiter were implemented and the contact & newsletter flows were wired to server APIs. Set environment variables and test with a staging SMTP account before going to production.
 
 ---
 
@@ -16,7 +16,8 @@ Server-side email sending, reCAPTCHA verification, and Upstash rate limiting wer
 - **Server utilities**
   - `lib/mailer.ts` — Nodemailer transport (STARTTLS support).
   - `lib/recaptcha.ts` — server-side reCAPTCHA verification helper.
-  - `lib/rate-limit.ts` — memory-only rate limiter with per-IP and per-email throttles (Upstash/Redis optional for horizontal scaling).
+  - `lib/rate-limit.ts` — memory-only rate limiter with per-IP and per-email throttles (configured via env vars; suitable for a single-instance deployment).
+  - `lib/logger.ts` — structured server-side logging (pino).
 
 - **API route handlers**
   - `app/api/contact/route.ts` — validates input, reCAPTCHA check, rate-limit, send notification email.
@@ -35,10 +36,11 @@ Server-side email sending, reCAPTCHA verification, and Upstash rate limiting wer
 
 - `nodemailer`
 - `mysql2` (server-side MySQL pool + migrations)
+- `pino` (server-side structured logging)
 
 (Installed via `npm`).
 
-Note: Upstash packages are NOT required for the default in-memory rate limiter used by this project — add them if you opt for centralized rate limiting later.
+Note: The default in-memory rate limiter is used for single-instance deployments; add centralized solutions later only if you need cross-instance consistency.
 
 ---
 
@@ -63,7 +65,7 @@ Notes: For STARTTLS set `SMTP_SECURE=false` and enforce `tls.minVersion='TLSv1.2
 ## Security & spam protections ✅
 
 - Server-side reCAPTCHA verification (score threshold ≈ 0.45).
-- Rate limiting via Upstash sliding window (contact: 5/h, newsletter: 10/h).
+- Rate limiting via in-memory sliding window limiter (configurable per `CONTACT_LIMIT`, `NEWSLETTER_LIMIT`, `NEWSLETTER_EMAIL_LIMIT`).
 - Zod input validation with clear 4xx/5xx responses.
 
 ---
@@ -88,7 +90,7 @@ Notes: For STARTTLS set `SMTP_SECURE=false` and enforce `tls.minVersion='TLSv1.2
 ## Quick file checklist
 
 - Modified: `next.config.mjs`
-- Added: `lib/mailer.ts`, `lib/recaptcha.ts`, `lib/rate-limit.ts`
+- Added: `lib/mailer.ts`, `lib/recaptcha.ts`, `lib/rate-limit.ts`, `lib/logger.ts`
 - Added: `app/api/contact/route.ts`, `app/api/newsletter/route.ts`
 - Updated: `components/contact/contact-form.tsx`, `components/newsletter-popup.tsx`
 - Added: `.env.example`

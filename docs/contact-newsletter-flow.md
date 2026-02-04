@@ -82,9 +82,9 @@ Test steps
 3. Integration: the newsletter send logic should skip `isBounced` or unsubscribed addresses
 
 Files & scripts:
-- workers/bounce-parser.js
+- `workers/bounce-parser.js`
 - `npm run bounce-worker` to run the worker
-- `lib/subscribers.ts` and `data/subscribers.json` (where bounce state is kept for now)
+- `lib/subscribers.ts` (MySQL-backed store; legacy `data/subscribers.json` can be imported with `MIGRATE_SUBSCRIBERS=true` if present)
 
 Env vars (IMAP)
 - IMAP_HOST, IMAP_PORT, IMAP_USER, IMAP_PASS, IMAP_BOUNCE_FOLDER, IMAP_PROCESSED_FOLDER, IMAP_POLL_INTERVAL_SECONDS
@@ -97,7 +97,7 @@ Notes:
 
 ## Rate limiting & spam protection 🛡️
 
-- Rate limiting is implemented with a memory-only limiter by default (per-IP sliding windows and per-email throttles). Configure limits via env vars: `CONTACT_LIMIT`, `NEWSLETTER_LIMIT`, `NEWSLETTER_EMAIL_LIMIT`, `BLOCK_THRESHOLD`, and `BLOCK_DURATION_MS`. Upstash/Redis can be added later if you need centralized limits across multiple instances.
+- Rate limiting is implemented with a memory-only limiter by default (per-IP sliding windows and per-email throttles). Configure limits via env vars: `CONTACT_LIMIT`, `NEWSLETTER_LIMIT`, `NEWSLETTER_EMAIL_LIMIT`, `BLOCK_THRESHOLD`, and `BLOCK_DURATION_MS`. This in-memory limiter is suitable for the site's single-instance deployment (1k–10k visits); it does not persist state across restarts.
 - reCAPTCHA verification is done server-side (`lib/recaptcha.ts`) before sending or subscriber creation. **Note:** `RECAPTCHA_SECRET` is required in production; the server enforces captcha checks and rejects low-score responses.
 - Server-side input validation with `zod` to guard the shape and sizes of payloads; inputs are also sanitized and header-injection is blocked.
 
@@ -123,6 +123,7 @@ Notes:
 - `lib/rate-limit.ts` — memory-only limiter with per-IP and per-email throttles
 - `lib/subscribers.ts` — subscriber store backed by MySQL (`lib/db.ts`)
 - `workers/bounce-parser.js` — IMAP bounce processor
+- `lib/logger.ts` — structured logging (pino) for server-side logs
 - `.env.example` — all required environment variables
 - `docs/smtp-integration.md` — integration summary
 - `docs/contact-newsletter-flow.md` — this file
@@ -139,9 +140,9 @@ Notes:
 ---
 
 ## Recommendations / Next steps 📈
-- Replace `lowdb` with a real DB (Supabase, Postgres) for production scale and multi-instance safety.
+- Subscribers are already persisted in MySQL (`lib/subscribers.ts`). For larger scale or multi-region needs consider Postgres/Supabase or managed DBs with replication.
 - Add queueing (BullMQ / Redis) for newsletter send jobs and separate worker(s) for sending to reduce request latency and handle retries/backoff.
-- Add monitoring and logging (Sentry, Prometheus) for send failures and bounce spikes.
+- Add monitoring and structured logging (pino) for send failures and bounce spikes.
 - Configure DKIM/SPF/DMARC for your sending domain (improves deliverability; ask your provider to enable DKIM signing or give you records).
 
 ---
