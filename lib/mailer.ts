@@ -37,6 +37,8 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
+import { forbidHeaderInjection } from './input';
+
 export async function sendMail(opts: {
   from?: string;
   to: string | string[];
@@ -49,10 +51,15 @@ export async function sendMail(opts: {
     throw new Error('SMTP is not configured. Set SMTP_HOST, SMTP_USER and SMTP_PASS in environment, or set SMTP_ALLOW_INSECURE=true for local testing without auth.');
   }
 
+  // Sanitize header values to prevent header injection
+  const safeFrom = forbidHeaderInjection(opts.from || process.env.SMTP_FROM || `no-reply@${SMTP_HOST}`);
+  const safeSubject = forbidHeaderInjection(opts.subject);
+  const safeReplyTo = opts.replyTo ? forbidHeaderInjection(opts.replyTo as string) : (process.env.SMTP_REPLY_TO || process.env.SMTP_FROM || undefined);
+  const safeTo = Array.isArray(opts.to) ? opts.to.map((t) => forbidHeaderInjection(t as string)) : forbidHeaderInjection(opts.to as string);
+
   const bounceAddress = process.env.SMTP_BOUNCE_EMAIL || process.env.SMTP_FROM || `no-reply@${SMTP_HOST}`;
   const listUnsubMail = process.env.SMTP_LIST_UNSUBSCRIBE || `mailto:${bounceAddress}`;
   const listUnsubUrl = process.env.SMTP_LIST_UNSUBSCRIBE_URL;
-  const replyTo = process.env.SMTP_REPLY_TO || process.env.SMTP_FROM || undefined;
 
   const providedHeaders = opts.headers || {};
   const listUnsubscribeHeader = listUnsubUrl ? `${listUnsubMail}, <${listUnsubUrl}>` : `${listUnsubMail}`;
@@ -66,16 +73,22 @@ export async function sendMail(opts: {
   if (listUnsubUrl) {
     headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
   }
-  const envelopeTo = Array.isArray(opts.to) ? opts.to : [opts.to];
+
+  // Sanitize header values provided by callers
+  for (const k of Object.keys(headers)) {
+    headers[k] = forbidHeaderInjection(headers[k]);
+  }
+
+  const envelopeTo = Array.isArray(safeTo) ? safeTo : [safeTo];
 
   return transporter.sendMail({
-    from: opts.from || process.env.SMTP_FROM || `no-reply@${SMTP_HOST}`,
-    to: opts.to,
-    subject: opts.subject,
+    from: safeFrom,
+    to: safeTo,
+    subject: safeSubject,
     text: opts.text,
     html: opts.html,
     envelope: { from: bounceAddress, to: envelopeTo },
     headers,
-    replyTo,
+    replyTo: safeReplyTo,
   });
 }

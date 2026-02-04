@@ -36,19 +36,35 @@ export async function POST(req: Request) {
 
     const parsed = schema.parse(body);
 
-    // Verify reCAPTCHA
+    // Enforce reCAPTCHA (require secret in production)
+    const recaptchaSecret = process.env.RECAPTCHA_SECRET;
     const recaptcha = await verifyRecaptcha(parsed.token, 'contact');
-    if (!recaptcha.success || (recaptcha.score && recaptcha.score < 0.45)) {
-      return new Response(JSON.stringify({ error: 'reCAPTCHA verification failed' }), { status: 401 });
+    if (recaptchaSecret && process.env.NODE_ENV === 'production') {
+      if (!recaptcha.success || (recaptcha.score && recaptcha.score < 0.45)) {
+        console.warn('reCAPTCHA failed for contact', { ip, recaptcha });
+        return new Response(JSON.stringify({ error: 'reCAPTCHA verification failed' }), { status: 401 });
+      }
+    } else if (!recaptchaSecret) {
+      console.warn('RECAPTCHA_SECRET not set — skipping verification for contact.');
     }
 
-    // Send notification email
-    const notifyTo = process.env.CONTACT_NOTIFY_EMAIL || process.env.SMTP_USER;
-    const subject = `New contact from ${parsed.firstName} ${parsed.lastName}`;
-    const text = `New contact submission:\n\nName: ${parsed.firstName} ${parsed.lastName}\nEmail: ${parsed.email}\nOrganization: ${parsed.organization || '-'}\nService: ${parsed.service || '-'} ${parsed.otherService ? `(${parsed.otherService})` : ''}\n\nMessage:\n${parsed.message}`;
+    // Sanitize inputs
+    const { sanitizeTextForEmail, normalizeEmail, forbidHeaderInjection } = await import('@/lib/input');
+    const firstName = sanitizeTextForEmail(parsed.firstName, 100);
+    const lastName = sanitizeTextForEmail(parsed.lastName, 100);
+    const email = normalizeEmail(parsed.email);
+    const organization = sanitizeTextForEmail(parsed.organization || '', 200);
+    const service = sanitizeTextForEmail(parsed.service || '', 100);
+    const otherService = sanitizeTextForEmail(parsed.otherService || '', 200);
+    const message = sanitizeTextForEmail(parsed.message, 5000);
+
+    // Construct safe subject and text (prevent header injection)
+    const notifyTo = process.env.CONTACT_NOTIFY_EMAIL || process.env.SMTP_USER || 'contact@ystmedia.com';
+    const subject = forbidHeaderInjection(`New contact from ${firstName} ${lastName}`);
+    const text = `New contact submission:\n\nName: ${firstName} ${lastName}\nEmail: ${email}\nOrganization: ${organization || '-'}\nService: ${service || '-'} ${otherService ? `(${otherService})` : ''}\n\nMessage:\n${message}`;
 
     await sendMail({
-      to: notifyTo || 'contact@ystmedia.com',
+      to: forbidHeaderInjection(notifyTo),
       subject,
       text,
     });

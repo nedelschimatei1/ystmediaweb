@@ -21,25 +21,33 @@ export async function POST(req: Request) {
     const schema = z.object({ email: z.string().email(), token: z.string().optional(), locale: z.enum(['ro','en']).optional() });
     const parsed = schema.parse(body);
 
-    // reCAPTCHA verification temporarily disabled for local testing — uncomment to re-enable in staging/prod.
-    // const recaptcha = await verifyRecaptcha(parsed.token, 'newsletter');
-    // console.debug('newsletter parsed:', { email: parsed.email, locale: parsed.locale ?? 'unset' });
-    // console.debug('recaptcha result:', recaptcha);
-    // if (!recaptcha.success || (recaptcha.score && recaptcha.score < 0.45)) {
-    //   console.warn('reCAPTCHA failed', recaptcha);
-    //   return new Response(JSON.stringify({ error: 'reCAPTCHA verification failed', details: recaptcha }), { status: 401 });
-    // }
-    // Bypass result used for local dev and staging without reCAPTCHA
-    const recaptcha = { success: true, score: 1 } as const;
+    // Enforce reCAPTCHA in production if secret present
+    const recaptchaSecret = process.env.RECAPTCHA_SECRET;
+    let recaptcha;
+    if (recaptchaSecret && process.env.NODE_ENV === 'production') {
+      recaptcha = await verifyRecaptcha(parsed.token, 'newsletter');
+      if (!recaptcha.success || (recaptcha.score && recaptcha.score < 0.45)) {
+        console.warn('reCAPTCHA failed for newsletter', { ip, recaptcha });
+        return new Response(JSON.stringify({ error: 'reCAPTCHA verification failed' }), { status: 401 });
+      }
+    } else {
+      // local/dev: allow but log for visibility
+      recaptcha = { success: true, score: 1 } as const;
+      if (!recaptchaSecret) console.warn('RECAPTCHA_SECRET not set — skipping verification for newsletter.');
+    }
+
+    // Normalize and sanitize email before DB call
+    const { normalizeEmail, sanitizeTextForEmail } = await import('@/lib/input');
+    const email = normalizeEmail(parsed.email);
 
     // Create or update subscriber record
-    const sub = await import('@/lib/subscribers').then((m) => m.upsertSubscriber(parsed.email));
+    const sub = await import('@/lib/subscribers').then((m) => m.upsertSubscriber(email));
 
     // Notify site owner (HTML)
     const notifyTo = process.env.CONTACT_NOTIFY_EMAIL || process.env.SMTP_USER;
     try {
       const { ownerNotificationTemplate } = await import('@/lib/email-templates');
-      const ownerTpl = ownerNotificationTemplate(parsed.email, parsed.locale || 'ro');
+      const ownerTpl = ownerNotificationTemplate(email, parsed.locale || 'ro');
       await sendMail({
         to: notifyTo || 'contact@ystmedia.com',
         subject: ownerTpl.subject,
@@ -58,14 +66,14 @@ export async function POST(req: Request) {
     // Send a confirmation email to subscriber (HTML) with List-Unsubscribe tokenized URL
     try {
       const siteUrl = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://ystmedia.com';
-      const unsubscribeUrl = `${siteUrl.replace(/\/$/, '')}/api/unsubscribe?email=${encodeURIComponent(parsed.email)}&token=${encodeURIComponent(sub.token)}`;
+      const unsubscribeUrl = `${siteUrl.replace(/\/$/, '')}/api/unsubscribe?email=${encodeURIComponent(email)}&token=${encodeURIComponent(sub.token)}`;
 
       const { confirmationTemplate } = await import('@/lib/email-templates');
       const locale = (parsed.locale === 'en' ? 'en' : 'ro');
-      const tpl = confirmationTemplate(parsed.email, unsubscribeUrl, locale);
+      const tpl = confirmationTemplate(email, unsubscribeUrl, locale);
 
       await sendMail({
-        to: parsed.email,
+        to: email,
         subject: tpl.subject,
         text: tpl.text,
         html: tpl.html,

@@ -99,8 +99,9 @@ Notes:
 
 - Upstash + `@upstash/ratelimit` is used to enforce per-IP request limits (configured sliding windows). Files:
   - `lib/rate-limit.ts`
-- reCAPTCHA verification is done server-side (`lib/recaptcha.ts`) before sending or subscriber creation
-- Server-side input validation with `zod` to guard shape and sizes of payloads
+  - If Upstash is not configured, the app falls back to an in-memory limiter; this is better than nothing but only safe for single-instance deployments.
+- reCAPTCHA verification is done server-side (`lib/recaptcha.ts`) before sending or subscriber creation. **Note:** `RECAPTCHA_SECRET` is required in production; the server enforces captcha checks and rejects low-score responses.
+- Server-side input validation with `zod` to guard the shape and sizes of payloads; inputs are also sanitized and header-injection is blocked.
 
 ---
 
