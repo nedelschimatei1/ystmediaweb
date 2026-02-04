@@ -42,6 +42,10 @@ export async function POST(req: Request) {
     if (recaptchaSecret && process.env.NODE_ENV === 'production') {
       if (!recaptcha.success || (recaptcha.score && recaptcha.score < 0.45)) {
         console.warn('reCAPTCHA failed for contact', { ip, recaptcha });
+        try {
+          const { reportFailure } = await import('@/lib/rate-limit');
+          await reportFailure(ip);
+        } catch (e) {}
         return new Response(JSON.stringify({ error: 'reCAPTCHA verification failed' }), { status: 401 });
       }
     } else if (!recaptchaSecret) {
@@ -71,8 +75,12 @@ export async function POST(req: Request) {
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (err: any) {
-    if (err?.name === 'ZodError' || err?.issues) {
-      return new Response(JSON.stringify({ error: 'Invalid input', details: err?.issues || err?.message }), { status: 400 });
+    if (err?.name === 'ZodError' || err?.issues) {      try {
+        const { reportFailure } = await import('@/lib/rate-limit');
+        await reportFailure(ip);
+      } catch (e) {
+        // ignore limiter failures
+      }      return new Response(JSON.stringify({ error: 'Invalid input', details: err?.issues || err?.message }), { status: 400 });
     }
     console.error('Contact API error', err);
     return new Response(JSON.stringify({ error: 'Server error' }), { status: 500 });

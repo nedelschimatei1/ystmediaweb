@@ -33,61 +33,124 @@ if (!redisUrl || !redisToken) {
 }
 */
 
-// Build a simple in-memory sliding window limiter as a production fallback when Upstash is not configured.
-// Not suitable for multi-process / horizontal scaling, but better than nothing when a proper Redis store is missing.
+/*
+  Memory-only rate limiter with blocklist and per-email throttles.
+  - Per-IP sliding window counters
+  - Per-email throttles (for newsletter signup attempts)
+  - Failure reporting that increments a failure counter and temporarily blocks an IP after a threshold
 
-type Limiter = {
-  limit: (key: string) => Promise<{ success: boolean; remaining?: number }>
-};
+  Configurable via env vars:
+  CONTACT_LIMIT (default 10 per hour)
+  NEWSLETTER_LIMIT (default 20 per hour)
+  NEWSLETTER_EMAIL_LIMIT (default 3 per hour)
+  BLOCK_THRESHOLD (default 5 failures)
+  BLOCK_DURATION_MS (default 30 minutes)
+*/
 
-function createMemoryLimiter(maxRequests: number, windowMs: number): Limiter {
-  const map = new Map<string, number[]>(); // key -> timestamps
+export type LimitResult = { success: boolean; remaining?: number; blockedUntil?: number };
+
+function now() {
+  return Date.now();
+}
+
+function createMemoryLimiter(maxRequests: number, windowMs: number, emailLimit = 3, blockThreshold = 5, blockDurationMs = 30 * 60 * 1000) {
+  const requests = new Map<string, number[]>(); // key -> timestamps
+  const emailRequests = new Map<string, number[]>(); // email -> timestamps
+  const failures = new Map<string, { count: number; lastFailure: number }>();
+  const blocked = new Map<string, number>(); // key -> blockedUntil timestamp
+
+  function prune(arr: number[], windowStart: number) {
+    return arr.filter((t) => t > windowStart);
+  }
+
   return {
-    limit: async (key: string) => {
-      const now = Date.now();
-      const windowStart = now - windowMs;
-      const arr = map.get(key) || [];
-      // remove old timestamps
-      const fresh = arr.filter((t) => t > windowStart);
-      fresh.push(now);
-      map.set(key, fresh);
+    limit: async (key: string, opts?: { email?: string }): Promise<LimitResult> => {
+      const bUntil = blocked.get(key);
+      const nowTs = now();
+      if (bUntil && bUntil > nowTs) return { success: false, blockedUntil: bUntil };
+
+      const windowStart = nowTs - windowMs;
+      const arr = requests.get(key) || [];
+      const fresh = prune(arr, windowStart);
+      fresh.push(nowTs);
+      requests.set(key, fresh);
       if (fresh.length > maxRequests) return { success: false, remaining: 0 };
+
+      if (opts?.email) {
+        const e = opts.email;
+        const eArr = emailRequests.get(e) || [];
+        const freshE = prune(eArr, windowStart);
+        freshE.push(nowTs);
+        emailRequests.set(e, freshE);
+        if (freshE.length > emailLimit) return { success: false, remaining: 0 };
+      }
+
       return { success: true, remaining: maxRequests - fresh.length };
     },
+
+    reportFailure: async (key: string): Promise<{ blocked: boolean; blockedUntil?: number }> => {
+      const nowTs = now();
+      const f = failures.get(key) || { count: 0, lastFailure: 0 };
+      f.count += 1;
+      f.lastFailure = nowTs;
+      failures.set(key, f);
+      if (f.count >= blockThreshold) {
+        const until = nowTs + blockDurationMs;
+        blocked.set(key, until);
+        failures.delete(key);
+        return { blocked: true, blockedUntil: until };
+      }
+      return { blocked: false };
+    },
+
+    isBlocked: (key: string) => {
+      const bUntil = blocked.get(key);
+      if (!bUntil) return false;
+      if (bUntil <= now()) {
+        blocked.delete(key);
+        return false;
+      }
+      return true;
+    },
+
+    resetFailures: (key: string) => failures.delete(key),
   };
 }
 
-// Use environment-configured Upstash Ratelimit when available, otherwise use a reasonable fallback.
-const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
-const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+// Build configured limiters
+const contactLimit = Number(process.env.CONTACT_LIMIT || 10);
+const newsletterLimit = Number(process.env.NEWSLETTER_LIMIT || 20);
+const newsletterEmailLimit = Number(process.env.NEWSLETTER_EMAIL_LIMIT || 3);
+const blockThreshold = Number(process.env.BLOCK_THRESHOLD || 5);
+const blockDurationMs = Number(process.env.BLOCK_DURATION_MS || 30 * 60 * 1000);
+const windowMs = 60 * 60 * 1000; // 1 hour
 
-if (upstashUrl && upstashToken) {
-  // Lazy-load Upstash libs only when configured
+export const contactLimiter = createMemoryLimiter(contactLimit, windowMs, 1, blockThreshold, blockDurationMs);
+export const newsletterLimiter = createMemoryLimiter(newsletterLimit, windowMs, newsletterEmailLimit, blockThreshold, blockDurationMs);
+
+// Convenience helpers for cross-flow blocking
+export async function reportFailure(key: string) {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { Redis } = require('@upstash/redis');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { Ratelimit } = require('@upstash/ratelimit');
-
-    const redis = new Redis({ url: upstashUrl, token: upstashToken });
-
-    export const contactLimiter = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, '1 h') });
-    export const newsletterLimiter = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, '1 h') });
+    const r1 = await contactLimiter.reportFailure(key as any);
+    const r2 = await newsletterLimiter.reportFailure(key as any);
+    const blockedUntil = r1.blockedUntil || r2.blockedUntil;
+    return { blocked: !!blockedUntil, blockedUntil };
   } catch (e) {
-    console.warn('Failed to initialize Upstash rate limiter, falling back to memory limiter', e);
-    export const contactLimiter = createMemoryLimiter(5, 60 * 60 * 1000);
-    export const newsletterLimiter = createMemoryLimiter(10, 60 * 60 * 1000);
-  }
-} else {
-  // In production, still use a memory limiter to avoid allowing unlimited abuse in case Upstash isn't configured
-  const isProd = process.env.NODE_ENV === 'production';
-  if (isProd) {
-    export const contactLimiter = createMemoryLimiter(10, 60 * 60 * 1000); // 10 / hour
-    export const newsletterLimiter = createMemoryLimiter(20, 60 * 60 * 1000); // 20 / hour
-  } else {
-    // Local dev: permissive but still keep a small limiter
-    export const contactLimiter = createMemoryLimiter(1000, 60 * 60 * 1000);
-    export const newsletterLimiter = createMemoryLimiter(1000, 60 * 60 * 1000);
+    return { blocked: false };
   }
 }
+
+export function isBlocked(key: string) {
+  return contactLimiter.isBlocked(key as any) || newsletterLimiter.isBlocked(key as any);
+}
+
+export function resetFailures(key: string) {
+  try {
+    contactLimiter.resetFailures(key as any);
+  } catch (e) {}
+  try {
+    newsletterLimiter.resetFailures(key as any);
+  } catch (e) {}
+}
+
 
