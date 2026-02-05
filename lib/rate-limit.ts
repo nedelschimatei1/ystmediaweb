@@ -131,8 +131,8 @@ export const newsletterLimiter = createMemoryLimiter(newsletterLimit, windowMs, 
 // Convenience helpers for cross-flow blocking
 export async function reportFailure(key: string) {
   try {
-    const r1 = await contactLimiter.reportFailure(key as any);
-    const r2 = await newsletterLimiter.reportFailure(key as any);
+    const r1 = await contactLimiter.reportFailure(key);
+    const r2 = await newsletterLimiter.reportFailure(key);
     const blockedUntil = r1.blockedUntil || r2.blockedUntil;
     return { blocked: !!blockedUntil, blockedUntil };
   } catch (e) {
@@ -141,15 +141,15 @@ export async function reportFailure(key: string) {
 }
 
 export function isBlocked(key: string) {
-  return contactLimiter.isBlocked(key as any) || newsletterLimiter.isBlocked(key as any);
+  return contactLimiter.isBlocked(key) || newsletterLimiter.isBlocked(key);
 }
 
 export function resetFailures(key: string) {
   try {
-    contactLimiter.resetFailures(key as any);
+    contactLimiter.resetFailures(key);
   } catch (e) {}
   try {
-    newsletterLimiter.resetFailures(key as any);
+    newsletterLimiter.resetFailures(key);
   } catch (e) {}
 }
 

@@ -1,20 +1,20 @@
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 import { Navigation } from "@/components/navigation";
 import { ContactHero } from "@/components/contact/contact-hero";
 import { FAQSchema, BreadcrumbSchema } from "@/components/structured-data";
 
 // Force static generation
-export const dynamicConfig = "force-static";
+export const dynamic = "force-static";
 export const revalidate = false;
 
 // Lazy load below-the-fold components
-const ScheduleConsultation = dynamic(() => import("@/components/contact/schedule-consultation").then(mod => ({ default: mod.ScheduleConsultation })));
-const ContactForm = dynamic(() => import("@/components/contact/contact-form").then(mod => ({ default: mod.ContactForm })));
-const ContactInfo = dynamic(() => import("@/components/contact/contact-info").then(mod => ({ default: mod.ContactInfo })));
-const ContactMap = dynamic(() => import("@/components/contact/contact-map").then(mod => ({ default: mod.ContactMap })));
-const FAQ = dynamic(() => import("@/components/contact/faq").then(mod => ({ default: mod.FAQ })));
-const ContactDivider = dynamic(() => import("@/components/contact/contact-divider").then(mod => ({ default: mod.ContactDivider })));
-const Footer = dynamic(() => import("@/components/footer").then(mod => ({ default: mod.Footer })));
+const ScheduleConsultation = dynamicImport(() => import("@/components/contact/schedule-consultation").then(mod => ({ default: mod.ScheduleConsultation })));
+const ContactForm = dynamicImport(() => import("@/components/contact/contact-form").then(mod => ({ default: mod.ContactForm })));
+const ContactInfo = dynamicImport(() => import("@/components/contact/contact-info").then(mod => ({ default: mod.ContactInfo })));
+const ContactMap = dynamicImport(() => import("@/components/contact/contact-map").then(mod => ({ default: mod.ContactMap })));
+const FAQ = dynamicImport(() => import("@/components/contact/faq").then(mod => ({ default: mod.FAQ })));
+const ContactDivider = dynamicImport(() => import("@/components/contact/contact-divider").then(mod => ({ default: mod.ContactDivider })));
+const Footer = dynamicImport(() => import("@/components/footer").then(mod => ({ default: mod.Footer })));
 
 // FAQ data for schema (English versions for SEO)
 const faqSchemaData = [
@@ -56,7 +56,7 @@ export default function ContactPage() {
       <FAQSchema faqs={faqSchemaData} />
       <BreadcrumbSchema items={breadcrumbData} />
       <Navigation />
-      <main>
+      <main id="main">
         <ContactHero />
         
         {/* Primary CTA - Schedule Consultation */}

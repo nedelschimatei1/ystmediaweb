@@ -4,7 +4,36 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X, Globe, Sun, Moon } from "lucide-react";
+// Inline minimal SVG icons to avoid pulling in the entire icon library
+function IconMenu({ className = "w-6 h-6" }: { className?: string }){
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M3 12h18M3 6h18M3 18h18" />
+    </svg>
+  );
+}
+function IconX({ className = "w-6 h-6" }: { className?: string }){
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M18 6L6 18M6 6l12 12" />
+    </svg>
+  );
+}
+function IconSun({ className = "w-4 h-4" }: { className?: string }){
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M20 12h2M2 12H4M16.95 7.05l1.41-1.41M4.64 19.36l1.41-1.41M16.95 16.95l1.41 1.41M4.64 4.64l1.41 1.41" />
+    </svg>
+  );
+}
+function IconMoon({ className = "w-4 h-4" }: { className?: string }){
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+    </svg>
+  );
+}
 import { cn } from "@/lib/utils";
 import { useI18n, Locale } from "@/lib/i18n";
 import { useTheme } from "@/components/theme-provider";
@@ -105,7 +134,7 @@ export function Navigation() {
               aria-label="Toggle theme"
             >
               {mounted ? (
-                theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />
+                theme === "dark" ? <IconSun className="w-4 h-4" /> : <IconMoon className="w-4 h-4" />
               ) : (
                 <div className="w-4 h-4" />
               )}
@@ -148,7 +177,7 @@ export function Navigation() {
               aria-label="Toggle theme"
             >
               {mounted ? (
-                theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />
+                theme === "dark" ? <IconSun className="w-5 h-5" /> : <IconMoon className="w-5 h-5" />
               ) : (
                 <div className="w-5 h-5" />
               )}
@@ -173,7 +202,7 @@ export function Navigation() {
               className="p-2 text-foreground"
               aria-label="Toggle menu"
             >
-              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isOpen ? <IconX className="w-6 h-6" /> : <IconMenu className="w-6 h-6" />}
             </button>
           </div>
         </div>

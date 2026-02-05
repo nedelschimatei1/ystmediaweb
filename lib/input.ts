@@ -27,3 +27,18 @@ export function redactText(input: string, visible = 200) {
   if (input.length <= visible) return s;
   return s + '\n\n[Message redacted for privacy - truncated]';
 }
+
+export function redactEmail(email: string) {
+  if (!email) return '';
+  try {
+    const e = normalizeEmail(email);
+    const parts = e.split('@');
+    if (parts.length < 2) return email;
+    const local = parts[0];
+    const domain = parts[1];
+    if (local.length <= 2) return `***@${domain}`;
+    return `${local[0]}***${local.slice(-1)}@${domain}`;
+  } catch (err) {
+    return email;
+  }
+}

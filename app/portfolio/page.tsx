@@ -1,17 +1,17 @@
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 import { Navigation } from "@/components/navigation";
 import { PortfolioHero } from "@/components/portfolio/portfolio-hero";
 import { BreadcrumbSchema } from "@/components/structured-data";
 
 // Force static generation
-export const dynamicConfig = "force-static";
+export const dynamic = "force-static";
 export const revalidate = false;
 
 // Lazy load below-the-fold components
-const ProjectsGrid = dynamic(() => import("@/components/portfolio/projects-grid").then(mod => ({ default: mod.ProjectsGrid })));
-const ServicesShowcase = dynamic(() => import("@/components/portfolio/services-showcase").then(mod => ({ default: mod.ServicesShowcase })));
-const Testimonials = dynamic(() => import("@/components/portfolio/testimonials").then(mod => ({ default: mod.Testimonials })));
-const Footer = dynamic(() => import("@/components/footer").then(mod => ({ default: mod.Footer })));
+const ProjectsGrid = dynamicImport(() => import("@/components/portfolio/projects-grid").then(mod => ({ default: mod.ProjectsGrid })));
+const ServicesShowcase = dynamicImport(() => import("@/components/portfolio/services-showcase").then(mod => ({ default: mod.ServicesShowcase })));
+const Testimonials = dynamicImport(() => import("@/components/portfolio/testimonials").then(mod => ({ default: mod.Testimonials })));
+const Footer = dynamicImport(() => import("@/components/footer").then(mod => ({ default: mod.Footer })));
 
 const breadcrumbData = [
   { name: "Home", url: "https://ystmedia.com" },
@@ -28,7 +28,7 @@ export default function PortfolioPage() {
     <>
       <BreadcrumbSchema items={breadcrumbData} />
       <Navigation />
-      <main>
+      <main id="main">
         <PortfolioHero />
         <ProjectsGrid />
         <ServicesShowcase />

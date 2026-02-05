@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { markUnsubscribed, getSubscriber } from '@/lib/subscribers';
+import { safeLogError } from '@/lib/observability';
 
 export async function GET(req: Request) {
   try {
@@ -11,20 +12,47 @@ export async function GET(req: Request) {
       return new Response('Missing email or token', { status: 400 });
     }
 
-    const sub = await getSubscriber(email);
-    if (!sub) return new Response('Subscriber not found', { status: 404 });
-    if (sub.token !== token) return new Response('Invalid token', { status: 401 });
+    // Rate-limit unsubscribe attempts per IP to avoid enumeration
+    try {
+      const { contactLimiter, reportFailure } = await import('@/lib/rate-limit');
+      const ip = (req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'))?.split(',')[0] || 'unknown';
+      const lim = await contactLimiter.limit(ip);
+      if (!lim.success) return new Response('Too many requests', { status: 429 });
 
-    await markUnsubscribed(email);
+      const sub = await getSubscriber(email);
+      if (!sub) return new Response('Subscriber not found', { status: 404 });
 
-    const html = `<html><body><h1>Unsubscribed</h1><p>${email} has been unsubscribed from our newsletter.</p></body></html>`;
+      // Constant-time token compare to avoid timing attacks
+      const crypto = await import('crypto');
+      const a = Buffer.from(String(sub.token));
+      const b = Buffer.from(String(token));
+      let ok = false;
+      try {
+        if (a.length === b.length && crypto.timingSafeEqual(a, b)) ok = true;
+      } catch (e) {
+        ok = false;
+      }
 
-    return new Response(html, {
-      status: 200,
-      headers: { 'Content-Type': 'text/html' },
-    });
+      if (!ok) {
+        // report failure for potential enumeration or brute-force
+        try { await reportFailure(ip); } catch (e) {}
+        return new Response('Invalid token', { status: 401 });
+      }
+
+      await markUnsubscribed(email);
+
+      const html = `<html><body><h1>Unsubscribed</h1><p>You have been unsubscribed from our newsletter.</p></body></html>`;
+
+      return new Response(html, {
+        status: 200,
+        headers: { 'Content-Type': 'text/html' },
+      });
+    } catch (e) {
+      safeLogError(e, { route: '/api/unsubscribe' });
+      return new Response('Server error', { status: 500 });
+    }
   } catch (err) {
-    console.error(err);
+    safeLogError(err, { route: '/api/unsubscribe' });
     return new Response('Server error', { status: 500 });
   }
 }

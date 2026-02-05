@@ -1,11 +1,10 @@
 import React from "react"
 import type { Metadata } from 'next'
 import { Playfair_Display, Inter } from 'next/font/google'
+import DeferredWidgets from '@/components/deferred-widgets'
 import { ThemeProvider } from '@/components/theme-provider'
 import { I18nProvider } from '@/lib/i18n'
-import { NewsletterWrapper } from '@/components/newsletter-wrapper'
-import { WhatsAppButton } from '@/components/whatsapp-button'
-import { HomePageSchemas } from '@/components/structured-data'
+import { HomePageSchemas } from '@/components/structured-data' 
 import SamePageLinkHandler from '@/components/same-page-link-handler'
 import './globals.css'
 
@@ -103,10 +102,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <I18nProvider>
+            <a href="#main" className="sr-only focus:not-sr-only">Skip to content</a>
             {children}
             <SamePageLinkHandler />
-            <NewsletterWrapper />
-            <WhatsAppButton />
+            <DeferredWidgets delay={3000} />
           </I18nProvider>
         </ThemeProvider>
       </body>

@@ -3,10 +3,13 @@ import { sendMail } from '@/lib/mailer';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { contactLimiter } from '@/lib/rate-limit';
 import logger from '@/lib/logger';
+import { makeErrorResponse } from '@/lib/errors';
+import { safeLogError } from '@/lib/observability';
 
 export async function POST(req: Request) {
+  let ip = 'unknown';
   try {
-    const ip =
+    ip =
       (req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || req.headers.get('cf-connecting-ip'))
         ?.split(',')[0] ||
       'unknown';
@@ -54,7 +57,7 @@ export async function POST(req: Request) {
     }
 
     // Sanitize inputs
-    const { sanitizeTextForEmail, normalizeEmail, forbidHeaderInjection } = await import('@/lib/input');
+    const { sanitizeTextForEmail, normalizeEmail, forbidHeaderInjection, redactText } = await import('@/lib/input');
     const firstName = sanitizeTextForEmail(parsed.firstName, 100);
     const lastName = sanitizeTextForEmail(parsed.lastName, 100);
     const email = normalizeEmail(parsed.email);
@@ -88,8 +91,8 @@ export async function POST(req: Request) {
     }
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
-  } catch (err: any) {
-    if (err?.name === 'ZodError' || err?.issues) {
+  } catch (err: unknown) {
+    if (err instanceof z.ZodError) {
       try {
         const { reportFailure } = await import('@/lib/rate-limit');
         await reportFailure(ip);
@@ -100,7 +103,9 @@ export async function POST(req: Request) {
       logger.warn({ ip, error: err?.name || 'ZodError' }, 'Validation error on /api/contact');
       return new Response(JSON.stringify({ error: 'Invalid input' }), { status: 400 });
     }
-    logger.error({ err: err }, 'Contact API error');
-    return new Response(JSON.stringify({ error: 'Server error' }), { status: 500 });
+
+    // Use safe logging and consistent response format
+    safeLogError(err, { ip });
+    return new Response(JSON.stringify(makeErrorResponse(err)), { status: 500 });
   }
 }

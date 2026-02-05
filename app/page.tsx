@@ -1,5 +1,6 @@
 import dynamicImport from "next/dynamic";
-import { ScrollSnapContainer, ScrollSnapSection, ScrollSnapDots } from "@/components/scroll-snap-container";
+// Defer scroll-snap container and related client widgets to avoid increasing initial hydration bundle
+import ScrollSnapLoader, { ScrollSnapSection, ScrollSnapDots } from '@/components/scroll-snap-loader'
 import { ScrollProgress } from "@/components/parallax-effects";
 import { Navigation } from "@/components/navigation";
 import { HeroSection } from "@/components/home/hero-section";
@@ -30,7 +31,7 @@ export default function HomePage() {
     <>
       <ScrollProgress />
       <Navigation />
-      <ScrollSnapContainer>
+      <ScrollSnapLoader>
         <ScrollSnapDots />
         
         <ScrollSnapSection index={0}>
@@ -56,7 +57,7 @@ export default function HomePage() {
         <div className="snap-start">
           <Footer />
         </div>
-      </ScrollSnapContainer>
+      </ScrollSnapLoader>
     </>
   );
 }

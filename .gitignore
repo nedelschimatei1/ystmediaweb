@@ -48,6 +48,7 @@ credentials.json
 
 # Local IDE / editor and system files
 .vscode/
+.idea/
 .history/
 .DS_Store
 Thumbs.db
@@ -67,5 +68,25 @@ dist/
 .eslintcache
 .yarn-integrity
 
+# Package manager lockfiles (ignore alternative lockfiles generated locally)
+package-lock.json
+yarn.lock
+
+# Logs
+*.log
+npm-debug.log*
+.pnpm-debug.log*
+
 # Local function settings (Azure etc.)
 local.settings.json
+
+# Optional: ignore local environment files and secrets
+.env.local
+.env.test
+.env.production.local
+.env.development.local
+
+# Ignore OS-specific and temporary files
+*.swp
+*.swo
+*.tmp

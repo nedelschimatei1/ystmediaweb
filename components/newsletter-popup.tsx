@@ -73,7 +73,7 @@ export function NewsletterPopup() {
       const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
       if (siteKey) {
         try {
-          if (!(window as any).grecaptcha) {
+          if (!window.grecaptcha) {
             await new Promise<void>((resolve, reject) => {
               const s = document.createElement('script');
               s.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
@@ -83,7 +83,7 @@ export function NewsletterPopup() {
               document.head.appendChild(s);
             });
           }
-          token = await (window as any).grecaptcha.execute(siteKey, { action: 'newsletter' });
+          token = await window.grecaptcha!.execute(siteKey, { action: 'newsletter' });
         } catch (err) {
           console.warn('reCAPTCHA error', err);
         }
@@ -105,9 +105,10 @@ export function NewsletterPopup() {
       setTimeout(() => {
         handleClose();
       }, 1500);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Newsletter subscribe error', err);
-      setErrorMessage(err?.message || 'A apărut o eroare. Încearcă din nou.');
+      const message = err instanceof Error ? err.message : typeof err === 'string' ? err : 'A apărut o eroare. Încearcă din nou.';
+      setErrorMessage(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -185,7 +186,7 @@ export function NewsletterPopup() {
           {/* Content */}
           <div className="px-5 py-5 sm:px-6 sm:py-6">
             {isSubmitted ? (
-              <div className="text-center py-4">
+              <div className="text-center py-4" role="status" aria-live="polite">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <CheckCircle2 className="w-6 h-6 text-primary" />
                 </div>
@@ -221,13 +222,14 @@ export function NewsletterPopup() {
                       )}
                     />
                     {errorMessage && (
-                      <p className="mt-2 text-sm text-destructive text-center">{errorMessage}</p>
+                      <p role="alert" aria-live="assertive" className="mt-2 text-sm text-destructive text-center">{errorMessage}</p>
                     )}
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
+                    aria-busy={isSubmitting}
                     className={cn(
                       "w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 sm:py-3",
                       "text-base sm:text-sm font-medium",

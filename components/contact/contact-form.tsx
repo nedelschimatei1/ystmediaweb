@@ -61,7 +61,7 @@ export function ContactForm() {
 
   const loadRecaptcha = (siteKey: string) => {
     return new Promise<void>((resolve, reject) => {
-      if ((window as any).grecaptcha) return resolve();
+      if (window.grecaptcha) return resolve();
       const script = document.createElement('script');
       script.src = `https://www.google.com/recaptcha/api.js?render=${siteKey}`;
       script.async = true;
@@ -82,7 +82,7 @@ export function ContactForm() {
       if (siteKey) {
         try {
           await loadRecaptcha(siteKey);
-          token = await (window as any).grecaptcha.execute(siteKey, { action: 'contact' });
+          token = await window.grecaptcha!.execute(siteKey, { action: 'contact' });
         } catch (err) {
           console.warn('reCAPTCHA load/execute error', err);
         }
@@ -98,9 +98,10 @@ export function ContactForm() {
       if (!res.ok) throw new Error(data?.error || 'Submission failed');
 
       setIsSubmitted(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Contact submit error', err);
-      setSubmitError(err?.message || 'An error occurred. Please try again.');
+      const message = err instanceof Error ? err.message : typeof err === 'string' ? err : 'An error occurred. Please try again.';
+      setSubmitError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -108,7 +109,7 @@ export function ContactForm() {
 
   if (isSubmitted) {
     return (
-      <div className="bg-card border border-border rounded-xl p-8 text-center">
+      <div className="bg-card border border-border rounded-xl p-8 text-center" role="status" aria-live="polite">
         <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 animate-in zoom-in duration-500">
           <CheckCircle2 className="w-8 h-8 text-primary" />
         </div>
@@ -138,7 +139,7 @@ export function ContactForm() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {submitError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">{submitError}</div>
+          <div role="alert" aria-live="assertive" className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">{submitError}</div>
         )}
         {/* Name row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -269,6 +270,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={isSubmitting}
+          aria-busy={isSubmitting}
           className={cn(
             "group w-full relative inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium",
             "bg-primary text-primary-foreground dark:bg-accent dark:text-accent-foreground rounded-full overflow-hidden",

@@ -47,6 +47,7 @@ export async function sendMail(opts: {
   text?: string;
   html?: string;
   headers?: Record<string, string>;
+  replyTo?: string;
 }) {
   if (!SMTP_HOST || ((!SMTP_USER || !SMTP_PASS) && !SMTP_ALLOW_INSECURE)) {
     throw new Error('SMTP is not configured. Set SMTP_HOST, SMTP_USER and SMTP_PASS in environment, or set SMTP_ALLOW_INSECURE=true for local testing without auth.');

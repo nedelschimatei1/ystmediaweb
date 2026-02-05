@@ -3,10 +3,13 @@ import { sendMail } from '@/lib/mailer';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { newsletterLimiter } from '@/lib/rate-limit';
 import logger from '@/lib/logger';
+import { makeErrorResponse } from '@/lib/errors';
+import { safeLogError } from '@/lib/observability';
 
 export async function POST(req: Request) {
+  let ip = 'unknown';
   try {
-    const ip = (req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'))?.split(',')[0] || 'unknown';
+    ip = (req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'))?.split(',')[0] || 'unknown';
 
     try {
       const limitRes = await newsletterLimiter.limit(ip);
@@ -47,9 +50,8 @@ export async function POST(req: Request) {
 
     // Pre-check per-email throttle
     try {
-      const { limit } = await import('@/lib/rate-limit');
-      // Use newsletter limiter and pass email option
-      const emailCheck = await import('@/lib/rate-limit').then((m) => m.newsletterLimiter.limit(ip, { email }));
+      const { newsletterLimiter } = await import('@/lib/rate-limit');
+      const emailCheck = await newsletterLimiter.limit(ip, { email });
       if (!emailCheck.success) {
         return new Response(JSON.stringify({ error: 'Too many requests for this email' }), { status: 429 });
       }
@@ -59,6 +61,9 @@ export async function POST(req: Request) {
 
     // Create or update subscriber record
     const sub = await import('@/lib/subscribers').then((m) => m.upsertSubscriber(email));
+    if (!sub) {
+      logger.warn({ email }, 'Failed to create/find subscriber');
+    }
 
     // Notify site owner (HTML)
     const notifyTo = process.env.CONTACT_NOTIFY_EMAIL || process.env.SMTP_USER;
@@ -83,7 +88,7 @@ export async function POST(req: Request) {
     // Send a confirmation email to subscriber (HTML) with List-Unsubscribe tokenized URL
     try {
       const siteUrl = process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://ystmedia.com';
-      const unsubscribeUrl = `${siteUrl.replace(/\/$/, '')}/api/unsubscribe?email=${encodeURIComponent(email)}&token=${encodeURIComponent(sub.token)}`;
+      const unsubscribeUrl = `${siteUrl.replace(/\/$/, '')}/api/unsubscribe?email=${encodeURIComponent(email)}&token=${encodeURIComponent(sub?.token ?? '')}`;
 
       const { confirmationTemplate } = await import('@/lib/email-templates');
       const locale = (parsed.locale === 'en' ? 'en' : 'ro');
@@ -110,8 +115,8 @@ export async function POST(req: Request) {
     }
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
-  } catch (err: any) {
-    if (err?.name === 'ZodError' || err?.issues) {
+  } catch (err: unknown) {
+    if (err instanceof z.ZodError) {
       try {
         const { reportFailure } = await import('@/lib/rate-limit');
         await reportFailure(ip);
@@ -119,7 +124,8 @@ export async function POST(req: Request) {
       logger.warn({ ip }, 'Validation error on /api/newsletter');
       return new Response(JSON.stringify({ error: 'Invalid input' }), { status: 400 });
     }
-    logger.error({ err }, 'Newsletter API error');
-    return new Response(JSON.stringify({ error: 'Server error' }), { status: 500 });
+    // Consistent handling & safe logging
+    safeLogError(err, { ip });
+    return new Response(JSON.stringify(makeErrorResponse(err)), { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { useState, useMemo, memo } from "react";
+import { ArrowUpRightIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 
@@ -9,81 +9,143 @@ export function ProjectsGrid() {
   const { t } = useI18n();
   const [activeCategory, setActiveCategory] = useState("all");
 
-  const categories = [
-    { key: "all", label: t("portfolio.filter.all") },
-    { key: "hotel-management", label: t("portfolio.filter.hotelManagement") },
-    { key: "digital-marketing", label: t("portfolio.filter.digitalMarketing") },
-    { key: "certifications", label: t("portfolio.filter.certifications") },
-    { key: "consulting", label: t("portfolio.filter.consulting") },
-  ];
+  const categories = useMemo(
+    () => [
+      { key: "all", label: t("portfolio.filter.all") },
+      { key: "hotel-management", label: t("portfolio.filter.hotelManagement") },
+      { key: "digital-marketing", label: t("portfolio.filter.digitalMarketing") },
+      { key: "certifications", label: t("portfolio.filter.certifications") },
+      { key: "consulting", label: t("portfolio.filter.consulting") },
+    ],
+    [t]
+  );
 
-  const projects = [
-    {
-      id: 1,
-      title: "Grand Palace Hotel",
-      category: "hotel-management",
-      categoryLabel: t("portfolio.filter.hotelManagement"),
-      description: t("portfolio.project1.desc"),
-      location: t("portfolio.project1.location"),
-      year: "2024",
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "Mountain Resort",
-      category: "digital-marketing",
-      categoryLabel: t("portfolio.filter.digitalMarketing"),
-      description: t("portfolio.project2.desc"),
-      location: t("portfolio.project2.location"),
-      year: "2023",
-      featured: false,
-    },
-    {
-      id: 3,
-      title: "Seaside Luxury Resort",
-      category: "certifications",
-      categoryLabel: t("portfolio.filter.certifications"),
-      description: t("portfolio.project3.desc"),
-      location: t("portfolio.project3.location"),
-      year: "2024",
-      featured: true,
-    },
-    {
-      id: 4,
-      title: "Boutique Hotel Chain",
-      category: "consulting",
-      categoryLabel: t("portfolio.filter.consulting"),
-      description: t("portfolio.project4.desc"),
-      location: t("portfolio.project4.location"),
-      year: "2023",
-      featured: false,
-    },
-    {
-      id: 5,
-      title: "Wellness Spa Resort",
-      category: "hotel-management",
-      categoryLabel: t("portfolio.filter.hotelManagement"),
-      description: t("portfolio.project5.desc"),
-      location: t("portfolio.project5.location"),
-      year: "2024",
-      featured: false,
-    },
-    {
-      id: 6,
-      title: "Historic Castle Hotel",
-      category: "digital-marketing",
-      categoryLabel: t("portfolio.filter.digitalMarketing"),
-      description: t("portfolio.project6.desc"),
-      location: t("portfolio.project6.location"),
-      year: "2023",
-      featured: true,
-    },
-  ];
+  const projects = useMemo(
+    () => [
+      {
+        id: 1,
+        title: "Grand Palace Hotel",
+        category: "hotel-management",
+        categoryLabel: t("portfolio.filter.hotelManagement"),
+        description: t("portfolio.project1.desc"),
+        location: t("portfolio.project1.location"),
+        year: "2024",
+        featured: true,
+      },
+      {
+        id: 2,
+        title: "Mountain Resort",
+        category: "digital-marketing",
+        categoryLabel: t("portfolio.filter.digitalMarketing"),
+        description: t("portfolio.project2.desc"),
+        location: t("portfolio.project2.location"),
+        year: "2023",
+        featured: false,
+      },
+      {
+        id: 3,
+        title: "Seaside Luxury Resort",
+        category: "certifications",
+        categoryLabel: t("portfolio.filter.certifications"),
+        description: t("portfolio.project3.desc"),
+        location: t("portfolio.project3.location"),
+        year: "2024",
+        featured: true,
+      },
+      {
+        id: 4,
+        title: "Boutique Hotel Chain",
+        category: "consulting",
+        categoryLabel: t("portfolio.filter.consulting"),
+        description: t("portfolio.project4.desc"),
+        location: t("portfolio.project4.location"),
+        year: "2023",
+        featured: false,
+      },
+      {
+        id: 5,
+        title: "Wellness Spa Resort",
+        category: "hotel-management",
+        categoryLabel: t("portfolio.filter.hotelManagement"),
+        description: t("portfolio.project5.desc"),
+        location: t("portfolio.project5.location"),
+        year: "2024",
+        featured: false,
+      },
+      {
+        id: 6,
+        title: "Historic Castle Hotel",
+        category: "digital-marketing",
+        categoryLabel: t("portfolio.filter.digitalMarketing"),
+        description: t("portfolio.project6.desc"),
+        location: t("portfolio.project6.location"),
+        year: "2023",
+        featured: true,
+      },
+    ],
+    [t]
+  );
 
-  const filteredProjects =
-    activeCategory === "all"
-      ? projects
-      : projects.filter((p) => p.category === activeCategory);
+  const filteredProjects = useMemo(
+    () => (activeCategory === "all" ? projects : projects.filter((p) => p.category === activeCategory)),
+    [activeCategory, projects]
+  );
+
+  const ProjectCard = memo(function ProjectCard({ project }: { project: any }) {
+    return (
+      <article
+        className={cn(
+          "group relative bg-card border border-border rounded-2xl overflow-hidden",
+          "hover:border-primary/30 hover:shadow-xl transition-all duration-500",
+          project.featured && "md:col-span-2 lg:col-span-1"
+        )}
+      >
+        {/* Image placeholder */}
+        <div className="relative h-48 bg-gradient-to-br from-primary/10 to-primary/5 overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="font-serif text-6xl font-medium text-primary/20">
+              {String(project.id).padStart(2, "0")}
+            </span>
+          </div>
+
+          {/* Featured badge */}
+          {project.featured && (
+            <div className="absolute top-4 left-4 px-3 py-1 bg-primary text-primary-foreground dark:bg-accent dark:text-accent-foreground text-xs font-medium rounded-full">
+              {t("portfolio.featured")}
+            </div>
+          )}
+
+          {/* Hover overlay */}
+          <div className="absolute inset-0 bg-primary/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="w-12 h-12 rounded-full bg-primary-foreground flex items-center justify-center">
+              <ArrowUpRightIcon className="w-5 h-5 text-primary" />
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
+            <span>{project.categoryLabel}</span>
+            <span className="w-1 h-1 rounded-full bg-muted-foreground" />
+            <span>{project.year}</span>
+          </div>
+
+          <h3 className="font-serif text-xl font-medium text-foreground mb-2 group-hover:text-primary transition-colors">
+            {project.title}
+          </h3>
+
+          <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+            {project.description}
+          </p>
+
+          <div className="pt-4 border-t border-border">
+            <span className="text-xs text-muted-foreground">{project.location}</span>
+          </div>
+        </div>
+      </article>
+    );
+  });
 
   return (
     <section className="py-12 lg:py-16 bg-background">
@@ -109,58 +171,7 @@ export function ProjectsGrid() {
         {/* Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredProjects.map((project) => (
-            <article
-              key={project.id}
-              className={cn(
-                "group relative bg-card border border-border rounded-2xl overflow-hidden",
-                "hover:border-primary/30 hover:shadow-xl transition-all duration-500",
-                project.featured && "md:col-span-2 lg:col-span-1"
-              )}
-            >
-              {/* Image placeholder */}
-              <div className="relative h-48 bg-gradient-to-br from-primary/10 to-primary/5 overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="font-serif text-6xl font-medium text-primary/20">
-                    {String(project.id).padStart(2, "0")}
-                  </span>
-                </div>
-                
-                {/* Featured badge */}
-                {project.featured && (
-                  <div className="absolute top-4 left-4 px-3 py-1 bg-primary text-primary-foreground dark:bg-accent dark:text-accent-foreground text-xs font-medium rounded-full">
-                    {t("portfolio.featured")}
-                  </div>
-                )}
-
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-primary/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="w-12 h-12 rounded-full bg-primary-foreground flex items-center justify-center">
-                    <ArrowUpRight className="w-5 h-5 text-primary" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-6">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-                  <span>{project.categoryLabel}</span>
-                  <span className="w-1 h-1 rounded-full bg-muted-foreground" />
-                  <span>{project.year}</span>
-                </div>
-
-                <h3 className="font-serif text-xl font-medium text-foreground mb-2 group-hover:text-primary transition-colors">
-                  {project.title}
-                </h3>
-
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                  {project.description}
-                </p>
-
-                <div className="pt-4 border-t border-border">
-                  <span className="text-xs text-muted-foreground">{project.location}</span>
-                </div>
-              </div>
-            </article>
+            <ProjectCard key={project.id} project={project} />
           ))}
         </div>
       </div>

@@ -64,15 +64,27 @@ export function ScrollSnapContainer({ children }: ScrollSnapContainerProps) {
   const wheelAccumulatorRef = useRef(0);
   const lastWheelTime = useRef(0);
 
-  // Detect mobile on mount and resize
+  // Detect mobile on mount and resize (debounced)
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.matchMedia("(max-width: 767px)").matches);
     };
-    
+
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+    const onResize = () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        checkMobile();
+        resizeTimer = null;
+      }, 150);
+    };
+
     checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      if (resizeTimer) clearTimeout(resizeTimer);
+    };
   }, []);
 
   useEffect(() => {
@@ -279,14 +291,20 @@ export function ScrollSnapDots() {
     setMounted(true);
   }, []);
 
-  // Detect scrolling to disable clicks during scroll
+  // Detect scrolling to disable clicks during scroll (rAF-throttled)
   useEffect(() => {
     let scrollTimeout: ReturnType<typeof setTimeout>;
-    
+    let ticking = false;
     const handleScroll = () => {
-      setIsScrolling(true);
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => setIsScrolling(false), 150);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolling(true);
+          clearTimeout(scrollTimeout);
+          scrollTimeout = setTimeout(() => setIsScrolling(false), 150);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     const container = document.querySelector('[class*="overflow-y-auto"]');
