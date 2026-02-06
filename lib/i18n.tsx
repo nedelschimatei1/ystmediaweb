@@ -114,3 +114,19 @@ export async function loadPortfolioTranslations(): Promise<void> {
 		console.warn('Failed to load portfolio translations:', e)
 	}
 }
+// Allow components to opt-in to load contact translations lazily (no-op if already present)
+export async function loadContactTranslations(): Promise<void> {
+	const hasContact = Object.keys(translations).some((k) =>
+		k.startsWith('contact.'),
+	)
+	if (hasContact) return
+
+	try {
+		const mod = await import('./translations/contact')
+		if (mod && mod.contactTranslations) {
+			Object.assign(translations, mod.contactTranslations)
+		}
+	} catch (e) {
+		console.warn('Failed to load contact translations:', e)
+	}
+}
