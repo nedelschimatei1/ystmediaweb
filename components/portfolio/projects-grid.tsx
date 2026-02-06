@@ -1,14 +1,31 @@
 'use client'
 
-import { useState, useMemo, memo } from 'react'
+import { useState, useMemo, memo, useEffect } from 'react'
 import { ArrowUpRightIcon } from '@/components/ui/icons'
 import { cn } from '@/lib/utils'
-import { useI18n } from '@/lib/i18n'
+import { useI18n, loadPortfolioTranslations } from '@/lib/i18n'
 
 export function ProjectsGrid() {
 	const { t } = useI18n()
 	const [activeCategory, setActiveCategory] = useState('all')
-
+	// Lazy-load portfolio translations to avoid shipping the large translations
+	// object in the initial client bundle. We force a cheap re-render after
+	// loading so `t()` picks up the newly-merged keys.
+	const [, setRerender] = useState(0)
+	useEffect(() => {
+		let mounted = true
+		;(async () => {
+			try {
+				await loadPortfolioTranslations()
+				if (mounted) setRerender((n) => n + 1)
+			} catch (e) {
+				// ignore failures; t() will fall back to keys
+			}
+		})()
+		return () => {
+			mounted = false
+		}
+	}, [])
 	const categories = useMemo(
 		() => [
 			{ key: 'all', label: t('portfolio.filter.all') },
