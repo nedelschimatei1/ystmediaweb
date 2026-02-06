@@ -15,15 +15,9 @@ import { ctaTranslations } from './translations/cta'
 import { contactTranslations } from './translations/contact'
 import { footerTranslations } from './translations/footer'
 import { servicesTranslations } from './translations/services'
+// portfolio translations are large; components can opt-in to load them on demand
+import { portfolioTranslations } from './translations/portfolio'
 import { faqTranslations } from './translations/faq'
-
-// Portfolio translations are large and only needed on the /portfolio page.
-// We lazy-load them when the portfolio page or component mounts to reduce
-// the initial client bundle size.
-export async function loadPortfolioTranslations() {
-	const mod = await import('./translations/portfolio')
-	Object.assign(translations, mod.portfolioTranslations)
-}
 import { newsletterTranslations } from './translations/newsletter'
 
 export type Locale = 'ro' | 'en'
@@ -45,6 +39,7 @@ export const translations: Translations = {
 	...contactTranslations,
 	...footerTranslations,
 	...servicesTranslations,
+	...portfolioTranslations,
 	...faqTranslations,
 	...newsletterTranslations,
 }
@@ -59,6 +54,7 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined)
 
 export function I18nProvider({ children }: { children: ReactNode }) {
 	const [locale, setLocale] = useState<Locale>('ro')
+	const [isHydrated, setIsHydrated] = useState(false)
 
 	useEffect(() => {
 		// Check for saved preference or browser language
@@ -71,6 +67,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 				setLocale('en')
 			}
 		}
+		setIsHydrated(true)
 	}, [])
 
 	const handleSetLocale = (newLocale: Locale) => {
@@ -86,6 +83,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
 	// Prevent hydration mismatch by not rendering until client is ready
 	// Use suppressHydrationWarning on critical elements instead
+	if (!isHydrated) return null
+
 	return (
 		<I18nContext.Provider value={{ locale, setLocale: handleSetLocale, t }}>
 			{children}
@@ -99,4 +98,23 @@ export function useI18n() {
 		throw new Error('useI18n must be used within an I18nProvider')
 	}
 	return context
+}
+
+// Allow components to opt-in to load portfolio translations lazily (no-op if already present)
+export async function loadPortfolioTranslations(): Promise<void> {
+	// if portfolio keys already present, skip
+	const hasPortfolio = Object.keys(translations).some((k) =>
+		k.startsWith('portfolio.'),
+	)
+	if (hasPortfolio) return
+
+	try {
+		const mod = await import('./translations/portfolio')
+		if (mod && mod.portfolioTranslations) {
+			Object.assign(translations, mod.portfolioTranslations)
+		}
+	} catch (e) {
+		// If dynamic import fails, swallow; components will still render keys as fallback
+		console.warn('Failed to load portfolio translations:', e)
+	}
 }
