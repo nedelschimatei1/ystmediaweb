@@ -12,8 +12,7 @@ const playfair = Playfair_Display({
 	subsets: ['latin'],
 	variable: '--font-playfair',
 	display: 'swap',
-	// Do not preload decorative display font on mobile to reduce LCP impact
-	preload: false,
+	preload: true,
 })
 const inter = Inter({
 	subsets: ['latin'],
